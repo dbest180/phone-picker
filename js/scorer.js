@@ -1,3 +1,7 @@
+--- js/scorer.js (原始)
+
+
++++ js/scorer.js (修改后)
 // ═══════════════════════════════════════════════════════════════
 //  Phone Equalizer — Scoring Engine
 //  Ported from phone_scorer.py v4
