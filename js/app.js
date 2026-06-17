@@ -1,3 +1,7 @@
+--- js/app.js (原始)
+
+
++++ js/app.js (修改后)
 // ═══════════════════════════════════════════════════════════════
 //  Phone Equalizer — UI Renderer & App Logic
 // ═══════════════════════════════════════════════════════════════
@@ -16,15 +20,15 @@ export function initApp() {
 
 function setupThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
-    
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    // Check for saved theme preference or default to dark (neon) mode
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
-    
+
     themeToggle.addEventListener('click', () => {
         const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         updateThemeIcon(newTheme);
@@ -33,8 +37,8 @@ function setupThemeToggle() {
 
 function updateThemeIcon(theme) {
     const themeToggle = document.getElementById('themeToggle');
-    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-    themeToggle.title = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+    themeToggle.title = theme === 'light' ? 'Switch to Neon Dark Mode' : 'Switch to Light Mode';
 }
 
 function renderSliders() {
