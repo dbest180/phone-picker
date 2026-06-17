@@ -1,3 +1,7 @@
+--- js/data.js (原始)
+
+
++++ js/data.js (修改后)
 // ═══════════════════════════════════════════════════════════════
 //  Phone Equalizer — Data Module
 //  Phone data copied from phones_clean.csv
