@@ -1,3 +1,7 @@
+--- index.html (原始)
+
+
++++ index.html (修改后)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +21,7 @@
         Drag the sliders to see how the rankings change in real time.
         The top phone adapts to <em>your</em> priorities.
     </div>
-    
+
     <button class="theme-toggle" id="themeToggle" title="Switch to Dark Mode">🌙</button>
 
     <div class="dashboard">
@@ -62,10 +66,10 @@
 
 <script type="module">
     import { initApp, resetWeights, copyWeights, shareConfiguration } from './js/app.js';
-    
+
     // Initialize the app
     initApp();
-    
+
     // Wire up buttons
     document.getElementById('resetBtn').addEventListener('click', resetWeights);
     document.getElementById('copyWeightsBtn').addEventListener('click', copyWeights);
