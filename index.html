@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Equalizer — Interactive Preference Discovery</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="app" id="app">
+    <h1>
+        📱 Phone Equalizer
+        <small>preference discovery</small>
+    </h1>
+    <div class="subtitle">
+        Drag the sliders to see how the rankings change in real time.
+        The top phone adapts to <em>your</em> priorities.
+    </div>
+    
+    <button class="theme-toggle" id="themeToggle" title="Switch to Dark Mode">🌙</button>
+
+    <div class="dashboard">
+        <!-- ── Controls ──────────────────────────────────────────── -->
+        <div class="controls-panel" id="controlsPanel">
+            <h2>
+                🎛️ Weights
+                <span>total max <span id="totalWeightDisplay">100</span>%</span>
+            </h2>
+            <div id="sliderContainer"></div>
+            <button class="reset-btn" id="resetBtn">↺ Reset to defaults</button>
+            <div class="deal-breaker-note" id="dealBreakerNote">
+                ⚡ <strong>Deal breakers</strong> — phones with Battery &lt; 6500 mAh, Charging &lt; 90 W, or Display &lt; 6.78" are greyed out.
+            </div>
+        </div>
+
+        <!-- ── Rankings ───────────────────────────────────────────── -->
+        <div class="rankings-panel">
+            <div class="header">
+                <h2>Rankings</h2>
+                <span class="count" id="countDisplay">0 phones</span>
+            </div>
+            <div id="rankingsContainer"></div>
+
+            <!-- Why panel -->
+            <div class="why-panel" id="whyPanel">
+                <h3>🧠 Why this phone?</h3>
+                <p id="whyText"></p>
+                <div class="breakdown" id="whyBreakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Based on your v4 scoring engine · Nanoreview camera scores</span>
+        <div class="actions">
+            <button id="copyWeightsBtn">📋 Copy weights</button>
+            <button id="shareBtn">🔗 Share this configuration</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initApp, resetWeights, copyWeights, shareConfiguration } from './js/app.js';
+    
+    // Initialize the app
+    initApp();
+    
+    // Wire up buttons
+    document.getElementById('resetBtn').addEventListener('click', resetWeights);
+    document.getElementById('copyWeightsBtn').addEventListener('click', copyWeights);
+    document.getElementById('shareBtn').addEventListener('click', shareConfiguration);
+</script>
+
+</body>
+</html>
