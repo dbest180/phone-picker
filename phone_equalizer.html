@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Equalizer — Interactive Preference Discovery</title>
+    <style>
+        /* ── Reset & Base ─────────────────────────────────────────── */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
+            background: #f6f8fa;
+            color: #1a1a2e;
+            padding: 24px;
+            line-height: 1.6;
+        }
+        .app {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 32px 36px 48px;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.07);
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #6b7280;
+            margin-left: 8px;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-top: 4px;
+            font-size: 15px;
+            border-left: 3px solid #e5e7eb;
+            padding-left: 16px;
+        }
+
+        /* ── Layout ───────────────────────────────────────────────── */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 32px;
+            margin-top: 28px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 28px;
+            }
+            .app {
+                padding: 20px 16px 32px;
+            }
+        }
+
+        /* ── Controls Panel ──────────────────────────────────────── */
+        .controls-panel {
+            background: #f9fafb;
+            border-radius: 18px;
+            padding: 20px 20px 24px;
+            border: 1px solid #eef2f6;
+            position: sticky;
+            top: 24px;
+        }
+        .controls-panel h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .controls-panel h2 span {
+            font-weight: 400;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .slider-group {
+            margin-bottom: 18px;
+        }
+        .slider-group:last-of-type {
+            margin-bottom: 8px;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .slider-label .val {
+            font-weight: 600;
+            color: #2563eb;
+            min-width: 32px;
+            text-align: right;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #d1d9e6;
+            border-radius: 4px;
+            outline: none;
+            transition: background 0.2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 1px 4px rgba(37, 99, 235, 0.3);
+            transition: 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.08);
+            background: #1d4ed8;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+        .reset-btn {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #d1d9e6;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4b5563;
+            cursor: pointer;
+            transition: 0.15s;
+            width: 100%;
+        }
+        .reset-btn:hover {
+            background: #eef2f6;
+            border-color: #9ca3af;
+        }
+
+        /* ── Deal-breaker indicators ─────────────────────────────── */
+        .deal-breaker-note {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            border-left: 3px solid #d1d9e6;
+        }
+        .deal-breaker-note strong {
+            color: #dc2626;
+        }
+
+        /* ── Rankings ────────────────────────────────────────────── */
+        .rankings-panel {
+            min-width: 0;
+        }
+        .rankings-panel .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .rankings-panel .header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .rankings-panel .header .count {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .phone-card {
+            display: grid;
+            grid-template-columns: 44px 1fr auto;
+            align-items: center;
+            gap: 14px 20px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            border-radius: 14px;
+            background: #fafbfc;
+            border: 1px solid #eef2f6;
+            transition: 0.15s;
+            cursor: default;
+        }
+        .phone-card:hover {
+            background: #f3f6fa;
+            border-color: #d1d9e6;
+        }
+        .phone-card.rank-1 {
+            background: #ecfdf5;
+            border-color: #6ee7b7;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.08);
+        }
+        .phone-card.rank-2 {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+        }
+        .phone-card.rank-3 {
+            background: #f5f3ff;
+            border-color: #c4b5fd;
+        }
+        .phone-card .rank {
+            font-weight: 700;
+            font-size: 20px;
+            color: #9ca3af;
+            text-align: center;
+            letter-spacing: -0.02em;
+            width: 44px;
+        }
+        .phone-card.rank-1 .rank {
+            color: #059669;
+        }
+        .phone-card .info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .phone-card .info .name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .phone-card .info .name .badge {
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-global {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .badge-china {
+            background: #fef3c7;
+            color: #b45309;
+        }
+        .phone-card .info .specs {
+            font-size: 13px;
+            color: #6b7280;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 2px;
+        }
+        .phone-card .info .specs span {
+            white-space: nowrap;
+        }
+        .phone-card .score-wrap {
+            text-align: right;
+            min-width: 70px;
+        }
+        .phone-card .score-wrap .score {
+            font-weight: 700;
+            font-size: 18px;
+            color: #111827;
+        }
+        .phone-card .score-wrap .max {
+            font-size: 13px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        .phone-card .score-wrap .pct {
+            font-size: 13px;
+            color: #6b7280;
+            display: block;
+            margin-top: 1px;
+        }
+        .phone-card.deal-breaker {
+            opacity: 0.5;
+            border-left: 4px solid #dc2626;
+            background: #fef2f2;
+        }
+        .phone-card.deal-breaker .info .name {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        .deal-breaker-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: #dc2626;
+            background: #fecaca;
+            padding: 2px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* ── Why panel ───────────────────────────────────────────── */
+        .why-panel {
+            margin-top: 24px;
+            padding: 16px 20px;
+            background: #f0f7ff;
+            border-radius: 14px;
+            border: 1px solid #bfdbfe;
+            display: none;
+        }
+        .why-panel.visible {
+            display: block;
+        }
+        .why-panel h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 6px;
+        }
+        .why-panel p {
+            font-size: 14px;
+            color: #1e293b;
+            line-height: 1.7;
+        }
+        .why-panel .breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #334155;
+        }
+        .why-panel .breakdown .cat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .why-panel .breakdown .cat .pts {
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        /* ── Footer ──────────────────────────────────────────────── */
+        .footer {
+            margin-top: 32px;
+            padding-top: 16px;
+            border-top: 1px solid #eef2f6;
+            font-size: 13px;
+            color: #9ca3af;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .footer .actions {
+            display: flex;
+            gap: 12px;
+        }
+        .footer .actions button {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: underline dotted;
+            padding: 0 4px;
+        }
+        .footer .actions button:hover {
+            color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app" id="app">
+    <h1>
+        📱 Phone Equalizer
+        <small>preference discovery</small>
+    </h1>
+    <div class="subtitle">
+        Drag the sliders to see how the rankings change in real time.
+        The top phone adapts to <em>your</em> priorities.
+    </div>
+
+    <div class="dashboard">
+        <!-- ── Controls ──────────────────────────────────────────── -->
+        <div class="controls-panel" id="controlsPanel">
+            <h2>
+                🎛️ Weights
+                <span>total max <span id="totalWeightDisplay">100</span>%</span>
+            </h2>
+            <div id="sliderContainer"></div>
+            <button class="reset-btn" id="resetBtn">↺ Reset to defaults</button>
+            <div class="deal-breaker-note" id="dealBreakerNote">
+                ⚡ <strong>Deal breakers</strong> — phones with Battery &lt; 6500 mAh, Charging &lt; 90 W, or Display &lt; 6.78" are greyed out.
+            </div>
+        </div>
+
+        <!-- ── Rankings ───────────────────────────────────────────── -->
+        <div class="rankings-panel">
+            <div class="header">
+                <h2>Rankings</h2>
+                <span class="count" id="countDisplay">0 phones</span>
+            </div>
+            <div id="rankingsContainer"></div>
+
+            <!-- Why panel -->
+            <div class="why-panel" id="whyPanel">
+                <h3>🧠 Why this phone?</h3>
+                <p id="whyText"></p>
+                <div class="breakdown" id="whyBreakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Based on your v4 scoring engine · Nanoreview camera scores</span>
+        <div class="actions">
+            <button id="copyWeightsBtn">📋 Copy weights</button>
+            <button id="shareBtn">🔗 Share this configuration</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ═══════════════════════════════════════════════════════════════
+    //  1.  DATA  —  copied from phones_clean.csv
+    // ═══════════════════════════════════════════════════════════════
+    const PHONES = [
+        { model: "Honor WIN", battery_mAh: 10000, charging_W: 120, camera_quality: 86, display_size_inches: 6.82, storage_gb: 256, ram_gb: 12, price_usd: 649, refresh_rate_hz: 185, os_type: "china ROM" },
+        { model: "OPPO Find X9 Ultra", battery_mAh: 7050, charging_W: 100, camera_quality: 96, display_size_inches: 6.83, storage_gb: 256, ram_gb: 12, price_usd: 1199, refresh_rate_hz: 120, os_type: "china ROM" },
+        { model: "Xiaomi 17 Ultra", battery_mAh: 6800, charging_W: 90, camera_quality: 96, display_size_inches: 6.9, storage_gb: 512, ram_gb: 12, price_usd: 999, refresh_rate_hz: 120, os_type: "china ROM" },
+        { model: "Xiaomi 17", battery_mAh: 7000, charging_W: 100, camera_quality: 86, display_size_inches: 6.3, storage_gb: 256, ram_gb: 12, price_usd: 649, refresh_rate_hz: 120, os_type: "china ROM" },
+        { model: "OnePlus 15", battery_mAh: 7300, charging_W: 120, camera_quality: 92, display_size_inches: 6.78, storage_gb: 256, ram_gb: 12, price_usd: 679, refresh_rate_hz: 165, os_type: "global ROM" },
+        { model: "Vivo X300 Ultra", battery_mAh: 6600, charging_W: 100, camera_quality: 94, display_size_inches: 6.82, storage_gb: 256, ram_gb: 12, price_usd: 1099, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Vivo X300 Pro", battery_mAh: 6510, charging_W: 90, camera_quality: 97, display_size_inches: 6.78, storage_gb: 256, ram_gb: 12, price_usd: 799, refresh_rate_hz: 120, os_type: "china ROM" },
+        { model: "Iqoo 15T", battery_mAh: 8000, charging_W: 100, camera_quality: 79, display_size_inches: 6.82, storage_gb: 256, ram_gb: 12, price_usd: 699, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Iqoo 15 Ultra", battery_mAh: 7400, charging_W: 100, camera_quality: 84, display_size_inches: 6.85, storage_gb: 512, ram_gb: 16, price_usd: 899, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Iqoo 15", battery_mAh: 7000, charging_W: 100, camera_quality: 89, display_size_inches: 6.82, storage_gb: 256, ram_gb: 12, price_usd: 649, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Iqoo Z11 Turbo", battery_mAh: 7600, charging_W: 100, camera_quality: 75, display_size_inches: 6.59, storage_gb: 256, ram_gb: 12, price_usd: 469, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Iqoo Neo 11", battery_mAh: 7500, charging_W: 100, camera_quality: 74, display_size_inches: 6.82, storage_gb: 256, ram_gb: 12, price_usd: 459, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Xiaomi 17 Pro Max", battery_mAh: 7500, charging_W: 100, camera_quality: 94, display_size_inches: 6.9, storage_gb: 512, ram_gb: 12, price_usd: 899, refresh_rate_hz: 120, os_type: "china ROM" },
+        { model: "Redmi K90 Max", battery_mAh: 8550, charging_W: 100, camera_quality: 77, display_size_inches: 6.83, storage_gb: 256, ram_gb: 12, price_usd: 499, refresh_rate_hz: 165, os_type: "china ROM" },
+        { model: "Redmagic 11S Pro Plus", battery_mAh: 7500, charging_W: 120, camera_quality: 77, display_size_inches: 6.65, storage_gb: 512, ram_gb: 16, price_usd: 1299, refresh_rate_hz: 144, os_type: "china ROM" },
+        { model: "Realme GT8 Pro", battery_mAh: 7000, charging_W: 120, camera_quality: 86, display_size_inches: 6.79, storage_gb: 256, ram_gb: 12, price_usd: 639, refresh_rate_hz: 144, os_type: "china ROM" }
+    ];
+
+    // ── Default weights (v4) ──────────────────────────────────────
+    const DEFAULT_WEIGHTS = {
+        os_rom: 25,
+        battery: 23,
+        price: 10,
+        storage: 20,
+        charging: 20,
+        display: 12,
+        camera: 15
+    };
+    const TOTAL_MAX = Object.values(DEFAULT_WEIGHTS).reduce((a, b) => a + b, 0); // 125
+
+    // ── Deal-breaker thresholds ──────────────────────────────────
+    const DEAL_BREAKERS = {
+        battery_mAh: 6500,
+        charging_W: 90,
+        display_size_inches: 6.78
+    };
+
+    // ═══════════════════════════════════════════════════════════════
+    //  2.  SCORING ENGINE  (ported from phone_scorer.py v4)
+    // ═══════════════════════════════════════════════════════════════
+
+    function scoreBattery(mah) {
+        if (mah < 6500) return 0;
+        if (mah <= 7500) return ((mah - 6500) / 1000) * 20;
+        if (mah >= 10000) return 23;
+        return 20 + ((mah - 7500) / 2500) * 3;
+    }
+
+    function scorePrice(usd) {
+        if (usd <= 500) return 10;
+        if (usd <= 800) return 10 - ((usd - 500) / 300) * 4;
+        if (usd <= 1000) return 6 - ((usd - 800) / 200) * 3;
+        return Math.max(0, 3 * Math.exp(-0.002 * (usd - 1000)));
+    }
+
+    function scoreStorage(gb) {
+        if (gb >= 1024) return 20;
+        if (gb >= 512) return 15;
+        if (gb >= 256) return 10;
+        return 5;
+    }
+
+    function scoreCharging(w) {
+        if (w >= 120) return 20;
+        if (w >= 100) return 10;
+        if (w >= 90) return 5;
+        return 0;
+    }
+
+    function scoreDisplay(inches) {
+        if (inches >= 6.9) return 12;
+        if (inches >= 6.78) return 10;
+        return 0;
+    }
+
+    function scoreCamera(nanoreview) {
+        if (nanoreview >= 95) return 13 + ((nanoreview - 95) / 5) * 2;
+        if (nanoreview >= 85) return 10 + ((nanoreview - 85) / 10) * 3;
+        if (nanoreview >= 70) return 5 + ((nanoreview - 70) / 15) * 5;
+        return Math.max(0, (nanoreview / 70) * 5);
+    }
+
+    function isDealBreaker(phone) {
+        return phone.battery_mAh < DEAL_BREAKERS.battery_mAh ||
+            phone.charging_W < DEAL_BREAKERS.charging_W ||
+            phone.display_size_inches < DEAL_BREAKERS.display_size_inches;
+    }
+
+    function scorePhone(phone, weights) {
+        const isGlobal = phone.os_type.toLowerCase().includes('global');
+        const osScore = isGlobal ? 25 : 15;
+        const maxScore = isGlobal ? 105 : 95;
+
+        const bat = scoreBattery(phone.battery_mAh);
+        const price = scorePrice(phone.price_usd);
+        const stor = scoreStorage(phone.storage_gb);
+        const chg = scoreCharging(phone.charging_W);
+        const disp = scoreDisplay(phone.display_size_inches);
+        const cam = scoreCamera(phone.camera_quality);
+
+        // Apply weight multipliers (weights are max points; we scale actual score to weight)
+        // But we want the weight to act as a multiplier on the category's contribution.
+        // In v4, weights ARE the max points. So we just use the raw scores.
+        // However, if the user slides a weight down, we want to reduce that category's influence.
+        // We'll scale each category by (weight / defaultMax) where defaultMax is the original max.
+        // But simpler: we use the weight directly as the max for that category.
+        // Actually in v4, each category has a fixed max. The weight slider changes the multiplier.
+        // Let's use the weight as a multiplier: category_score * (weight / defaultMax)
+        // Wait — in v4, the weights ARE the max points. So we just cap the score to the weight.
+        // But if weight is lower than the default max, we scale down.
+        const defaultMax = {
+            os_rom: 25,
+            battery: 23,
+            price: 10,
+            storage: 20,
+            charging: 20,
+            display: 12,
+            camera: 15
+        };
+
+        const scale = (score, category) => {
+            const max = defaultMax[category];
+            const w = weights[category];
+            // Scale: score * (w / max)
+            return score * (w / max);
+        };
+
+        const scaled = {
+            os_rom: scale(osScore, 'os_rom'),
+            battery: scale(bat, 'battery'),
+            price: scale(price, 'price'),
+            storage: scale(stor, 'storage'),
+            charging: scale(chg, 'charging'),
+            display: scale(disp, 'display'),
+            camera: scale(cam, 'camera')
+        };
+
+        const total = Object.values(scaled).reduce((a, b) => a + b, 0);
+        const totalMax = Object.values(weights).reduce((a, b) => a + b, 0);
+
+        return {
+            os_rom: { points: osScore, scaled: scaled.os_rom, max: weights.os_rom, note: isGlobal ? 'global ROM' : 'china ROM' },
+            battery: { points: bat, scaled: scaled.battery, max: weights.battery, note: `${phone.battery_mAh} mAh` },
+            price: { points: price, scaled: scaled.price, max: weights.price, note: `$${phone.price_usd}` },
+            storage: { points: stor, scaled: scaled.storage, max: weights.storage, note: `${phone.storage_gb} GB` },
+            charging: { points: chg, scaled: scaled.charging, max: weights.charging, note: `${phone.charging_W} W` },
+            display: { points: disp, scaled: scaled.display, max: weights.display, note: `${phone.display_size_inches}"` },
+            camera: { points: cam, scaled: scaled.camera, max: weights.camera, note: `NR ${phone.camera_quality}` },
+            total: total,
+            totalMax: totalMax,
+            pct: totalMax > 0 ? (total / totalMax) * 100 : 0,
+            dealBreaker: isDealBreaker(phone),
+            isGlobal: isGlobal
+        };
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  3.  UI RENDERER
+    // ═══════════════════════════════════════════════════════════════
+
+    let currentWeights = { ...DEFAULT_WEIGHTS };
+
+    function renderSliders() {
+        const container = document.getElementById('sliderContainer');
+        container.innerHTML = '';
+        const categories = [
+            { key: 'os_rom', label: 'OS ROM', max: 50, default: DEFAULT_WEIGHTS.os_rom },
+            { key: 'battery', label: 'Battery', max: 40, default: DEFAULT_WEIGHTS.battery },
+            { key: 'price', label: 'Price', max: 30, default: DEFAULT_WEIGHTS.price },
+            { key: 'storage', label: 'Storage', max: 30, default: DEFAULT_WEIGHTS.storage },
+            { key: 'charging', label: 'Charging', max: 30, default: DEFAULT_WEIGHTS.charging },
+            { key: 'display', label: 'Display', max: 25, default: DEFAULT_WEIGHTS.display },
+            { key: 'camera', label: 'Camera', max: 30, default: DEFAULT_WEIGHTS.camera }
+        ];
+
+        categories.forEach(cat => {
+            const group = document.createElement('div');
+            group.className = 'slider-group';
+
+            const label = document.createElement('div');
+            label.className = 'slider-label';
+            label.innerHTML = `
+                <span>${cat.label}</span>
+                <span class="val" id="val_${cat.key}">${currentWeights[cat.key]}</span>
+            `;
+            group.appendChild(label);
+
+            const input = document.createElement('input');
+            input.type = 'range';
+            input.min = 0;
+            input.max = cat.max;
+            input.value = currentWeights[cat.key];
+            input.dataset.key = cat.key;
+            input.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                currentWeights[cat.key] = val;
+                document.getElementById(`val_${cat.key}`).textContent = val;
+                updateTotalWeight();
+                renderRankings();
+            });
+            group.appendChild(input);
+            container.appendChild(group);
+        });
+        updateTotalWeight();
+    }
+
+    function updateTotalWeight() {
+        const total = Object.values(currentWeights).reduce((a, b) => a + b, 0);
+        document.getElementById('totalWeightDisplay').textContent = Math.round(total);
+    }
+
+    function renderRankings() {
+        const container = document.getElementById('rankingsContainer');
+        const countDisplay = document.getElementById('countDisplay');
+
+        // Score each phone
+        const scored = PHONES.map(phone => {
+            const result = scorePhone(phone, currentWeights);
+            return { phone, result };
+        });
+
+        // Sort: deal-breakers last, then by total score descending
+        const sorted = [...scored].sort((a, b) => {
+            if (a.result.dealBreaker && !b.result.dealBreaker) return 1;
+            if (!a.result.dealBreaker && b.result.dealBreaker) return -1;
+            return b.result.total - a.result.total;
+        });
+
+        const qualified = sorted.filter(s => !s.result.dealBreaker);
+        countDisplay.textContent = `${qualified.length} qualified · ${sorted.filter(s => s.result.dealBreaker).length} excluded`;
+
+        container.innerHTML = '';
+        sorted.forEach((item, idx) => {
+            const { phone, result } = item;
+            const card = document.createElement('div');
+            card.className = 'phone-card';
+            if (result.dealBreaker) card.classList.add('deal-breaker');
+            if (idx === 0 && !result.dealBreaker) card.classList.add('rank-1');
+            if (idx === 1 && !result.dealBreaker) card.classList.add('rank-2');
+            if (idx === 2 && !result.dealBreaker) card.classList.add('rank-3');
+
+            const rankDisplay = result.dealBreaker ? '✕' : `#${idx + 1}`;
+
+            const badgeClass = result.isGlobal ? 'badge-global' : 'badge-china';
+            const badgeLabel = result.isGlobal ? 'Global' : 'China';
+
+            card.innerHTML = `
+                <div class="rank">${rankDisplay}</div>
+                <div class="info">
+                    <div class="name">
+                        ${phone.model}
+                        <span class="badge ${badgeClass}">${badgeLabel}</span>
+                        ${result.dealBreaker ? '<span class="deal-breaker-tag">excluded</span>' : ''}
+                    </div>
+                    <div class="specs">
+                        <span>💰 $${phone.price_usd}</span>
+                        <span>🔋 ${phone.battery_mAh} mAh</span>
+                        <span>⚡ ${phone.charging_W}W</span>
+                        <span>📷 ${phone.camera_quality} NR</span>
+                        <span>📱 ${phone.display_size_inches}"</span>
+                        <span>💾 ${phone.storage_gb}GB</span>
+                    </div>
+                </div>
+                <div class="score-wrap">
+                    <div class="score">${result.total.toFixed(1)}</div>
+                    <div class="max">/ ${result.totalMax.toFixed(1)}</div>
+                    <div class="pct">${result.pct.toFixed(0)}%</div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                if (!result.dealBreaker) {
+                    showWhy(phone, result);
+                }
+            });
+
+            container.appendChild(card);
+        });
+
+        // Auto-show top phone
+        const top = sorted.find(s => !s.result.dealBreaker);
+        if (top) {
+            showWhy(top.phone, top.result);
+        }
+    }
+
+    function showWhy(phone, result) {
+        const panel = document.getElementById('whyPanel');
+        panel.classList.add('visible');
+
+        const breakdown = document.getElementById('whyBreakdown');
+        const text = document.getElementById('whyText');
+
+        // Build explanation
+        const categories = [
+            { label: 'OS ROM', key: 'os_rom' },
+            { label: 'Battery', key: 'battery' },
+            { label: 'Price', key: 'price' },
+            { label: 'Storage', key: 'storage' },
+            { label: 'Charging', key: 'charging' },
+            { label: 'Display', key: 'display' },
+            { label: 'Camera', key: 'camera' }
+        ];
+
+        const parts = categories.map(c => {
+            const s = result[c.key];
+            return `<span class="cat"><strong>${c.label}</strong> ${s.scaled.toFixed(1)}/<span class="pts">${s.max}</span> (${s.note})</span>`;
+        });
+
+        breakdown.innerHTML = parts.join('');
+
+        // Build narrative
+        const topCategory = categories
+            .map(c => ({ ...c, scaled: result[c.key].scaled, max: result[c.key].max }))
+            .sort((a, b) => (b.scaled / b.max) - (a.scaled / a.max))[0];
+
+        const secondCategory = categories
+            .map(c => ({ ...c, scaled: result[c.key].scaled, max: result[c.key].max }))
+            .sort((a, b) => (b.scaled / b.max) - (a.scaled / a.max))[1];
+
+        const osNote = result.isGlobal ? 'Global ROM' : 'China ROM';
+
+        text.innerHTML = `
+            <strong>${phone.model}</strong> scored <strong>${result.total.toFixed(1)}</strong> out of ${result.totalMax.toFixed(1)} (${result.pct.toFixed(0)}%).
+            It excelled in <strong>${topCategory.label}</strong> (${topCategory.scaled.toFixed(1)}/${topCategory.max})
+            and <strong>${secondCategory.label}</strong> (${secondCategory.scaled.toFixed(1)}/${secondCategory.max}).
+            ${result.isGlobal ? 'Global ROM adds 25 points (preferred).' : 'China ROM is 15 points (acceptable).'}
+            ${phone.price_usd > 1000 ? 'Price is above $1000, but the exponential decay still gives partial credit.' : `Price at $${phone.price_usd} is in the sweet spot.`}
+            ${phone.battery_mAh > 7500 ? `The ${phone.battery_mAh} mAh battery gives a nice bonus above the 7500 mAh sweet spot.` : `Battery at ${phone.battery_mAh} mAh is in the sweet spot.`}
+        `;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  4.  RESET & SHARE
+    // ═══════════════════════════════════════════════════════════════
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        currentWeights = { ...DEFAULT_WEIGHTS };
+        // Update sliders
+        document.querySelectorAll('#sliderContainer input[type="range"]').forEach(input => {
+            const key = input.dataset.key;
+            input.value = currentWeights[key];
+            document.getElementById(`val_${key}`).textContent = currentWeights[key];
+        });
+        updateTotalWeight();
+        renderRankings();
+    });
+
+    document.getElementById('copyWeightsBtn').addEventListener('click', () => {
+        const text = Object.entries(currentWeights)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join('\n');
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('copyWeightsBtn');
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => btn.textContent = '📋 Copy weights', 2000);
+        }).catch(() => {
+            // Fallback
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            const btn = document.getElementById('copyWeightsBtn');
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => btn.textContent = '📋 Copy weights', 2000);
+        });
+    });
+
+    document.getElementById('shareBtn').addEventListener('click', () => {
+        const params = new URLSearchParams();
+        Object.entries(currentWeights).forEach(([k, v]) => {
+            params.set(k, v);
+        });
+        const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = document.getElementById('shareBtn');
+            btn.textContent = '✅ Link copied!';
+            setTimeout(() => btn.textContent = '🔗 Share this configuration', 2000);
+        }).catch(() => {
+            // Fallback: show in alert
+            alert(`Share this URL:\n${url}`);
+        });
+    });
+
+    // ── Load from URL params ──────────────────────────────────────
+    function loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        let loaded = false;
+        const keys = Object.keys(DEFAULT_WEIGHTS);
+        keys.forEach(key => {
+            if (params.has(key)) {
+                const val = parseFloat(params.get(key));
+                if (!isNaN(val) && val >= 0) {
+                    currentWeights[key] = val;
+                    loaded = true;
+                }
+            }
+        });
+        if (loaded) {
+            // Update sliders
+            document.querySelectorAll('#sliderContainer input[type="range"]').forEach(input => {
+                const key = input.dataset.key;
+                if (currentWeights[key] !== undefined) {
+                    input.value = currentWeights[key];
+                    document.getElementById(`val_${key}`).textContent = currentWeights[key];
+                }
+            });
+            updateTotalWeight();
+            renderRankings();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  5.  INIT
+    // ═══════════════════════════════════════════════════════════════
+
+    renderSliders();
+    renderRankings();
+    loadFromURL();
+</script>
+
+</body>
+</html>
