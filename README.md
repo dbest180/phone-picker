@@ -93,15 +93,51 @@ Interaction
 
 📦 Files
 
-File Description
-phone_equalizer.html Single-file web app. Open in any browser.
-phone_scorer.py Python script for batch scoring (used to validate the engine).
-phones_clean.csv Source data (16 phones).
-rankings.json Output from the Python scorer.
+## New Modular Structure (v5)
+
+The project has been refactored into a modular structure for better maintainability:
+
+| File | Description |
+|------|-------------|
+| `index.html` | Main entry point. Clean HTML with module imports. |
+| `css/styles.css` | All styles including **Dark Mode** theme support. |
+| `js/data.js` | Phone data and configuration constants (exported as ES modules). |
+| `js/scorer.js` | Scoring engine functions (ported from `phone_scorer.py` v4). |
+| `js/app.js` | UI renderer, theme toggle, and app initialization logic. |
+| `phone_equalizer.html` | Original single-file version (legacy, still works). |
+| `phone_scorer.py` | Python script for batch scoring (used to validate the engine). |
+| `phones_clean.csv` | Source data (16 phones). |
+| `rankings.json` | Output from the Python scorer. |
+
+## Legacy Single-File Version
+
+| File | Description |
+|------|-------------|
+| `phone_equalizer.html` | Single-file web app. Open in any browser. (Original version) |
 
 ---
 
 🏗️ Architecture
+
+## New Modular Architecture (v5)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  index.html (Main entry point)                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  CSS: css/styles.css                               │   │
+│  │  • CSS Variables for Light/Dark themes            │   │
+│  │  • Theme toggle button styling                   │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │  JS Modules (ES6):                                 │   │
+│  │  • js/data.js - Phone data & constants            │   │
+│  │  • js/scorer.js - Scoring engine functions        │   │
+│  │  • js/app.js - UI rendering & theme management   │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Legacy Single-File Architecture (v4)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -127,13 +163,33 @@ rankings.json Output from the Python scorer.
 
 🧪 How To Use It
 
-1. Open phone_equalizer.html in any modern browser.
+## Using the New Modular Version (v5)
+
+1. **Open `index.html`** in any modern browser.
+   - ⚠️ Note: Due to ES6 module security restrictions, you need to serve the files via a local server.
+   - Quick options:
+     - VS Code: Use "Live Server" extension
+     - Python: `python -m http.server 8000` then open `http://localhost:8000`
+     - Node.js: `npx serve` or `npx http-server`
+2. **Drag the sliders** to adjust category weights.
+3. **Watch the rankings change** in real-time.
+4. **Click the theme toggle** (🌙/☀️) to switch between Light and Dark modes.
+5. **Click any phone** for a detailed breakdown:
+   - Why it scored what it did
+   - Which categories it excelled in
+   - Where it fell short
+6. **Share your configuration** — the URL encodes your weights.
+
+## Using the Legacy Single-File Version (v4)
+
+1. Open `phone_equalizer.html` in any modern browser.
+   - ✅ No server needed - just double-click to open!
 2. Drag the sliders to adjust category weights.
 3. Watch the rankings change in real-time.
 4. Click any phone for a detailed breakdown:
-   · Why it scored what it did
-   · Which categories it excelled in
-   · Where it fell short
+   - · Why it scored what it did
+   - · Which categories it excelled in
+   - · Where it fell short
 5. Share your configuration — the URL encodes your weights.
 
 Example Use Cases
@@ -180,34 +236,51 @@ The insight: The goal was never to build a scoring system. The goal was to build
 
 🔮 What's Next
 
-Idea Description
-More phones Add more data (new releases, different price tiers).
-More categories Add PWM dimming, build quality, brand reputation.
-Save profiles Let users save multiple weight profiles (e.g., "Work", "Travel", "Gaming").
-Compare mode Side-by-side comparison of two phones.
-Export decisions Generate a printable report with top 3 phones and reasoning.
-Backend API Serve the scoring engine as a REST API.
+## Completed in v5
+
+- ✅ **Dark Mode theme** with smooth transitions
+- ✅ **Modular file structure** (separate CSS, JS modules)
+- ✅ **ES6 module architecture** for better code organization
+- ✅ **Theme persistence** via localStorage
+- ✅ **Aesthetic color palette** for both light and dark modes
+
+## Future Ideas
+
+| Idea | Description |
+|------|-------------|
+| More phones | Add more data (new releases, different price tiers). |
+| More categories | Add PWM dimming, build quality, brand reputation. |
+| Save profiles | Let users save multiple weight profiles (e.g., "Work", "Travel", "Gaming"). |
+| Compare mode | Side-by-side comparison of two phones. |
+| Export decisions | Generate a printable report with top 3 phones and reasoning. |
+| Backend API | Serve the scoring engine as a REST API. |
 
 ---
 
 🧑‍💻 Technical Details
 
-Dependencies
+## Dependencies
 
-· None. This is a single HTML file with embedded CSS and JavaScript.
+### New Modular Version (v5)
+- **None** for runtime - pure vanilla JavaScript ES6 modules.
+- **Development**: Requires a local server to serve files (due to ES6 module CORS policy).
 
-Browser Support
+### Legacy Single-File Version (v4)
+- **None**. This is a single HTML file with embedded CSS and JavaScript.
 
-· Modern browsers (Chrome, Firefox, Safari, Edge).
-· Works on mobile (though sliders are easier on desktop).
+## Browser Support
 
-Data Format
+- Modern browsers (Chrome, Firefox, Safari, Edge).
+- Works on mobile (though sliders are easier on desktop).
+- Dark mode requires browsers supporting CSS custom properties (all modern browsers).
 
-The phone data is embedded in JavaScript. To add or modify phones, edit the PHONES array in the script section.
+## Data Format
 
-Scoring Functions
+The phone data is in `js/data.js` as an exported constant. To add or modify phones, edit the `PHONES` array.
 
-All scoring logic is ported from phone_scorer.py to JavaScript. The functions are:
+## Scoring Functions
+
+All scoring logic is ported from `phone_scorer.py` to JavaScript in `js/scorer.js`. The functions are:
 
 ```javascript
 scoreBattery(mah)   // Sweet spot + compressed bonus
@@ -217,6 +290,28 @@ scoreCharging(w)    // 90=5, 100=10, 120=20
 scoreDisplay(inches)// 6.78=10, 6.9+=12
 scoreCamera(nr)     // Nanoreview 70=5, 85=10, 95=13
 ```
+
+## Theme System
+
+The theme system uses CSS custom properties (variables) defined in `css/styles.css`:
+
+```css
+:root {
+    /* Light Mode colors */
+    --bg-primary: #f6f8fa;
+    --text-primary: #1a1a2e;
+    /* ... more variables ... */
+}
+
+[data-theme="dark"] {
+    /* Dark Mode colors */
+    --bg-primary: #0f172a;
+    --text-primary: #f1f5f9;
+    /* ... more variables ... */
+}
+```
+
+Theme preference is persisted in `localStorage` under the key `theme`.
 
 ---
 
