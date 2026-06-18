@@ -323,6 +323,796 @@ input[type=range]::-moz-range-thumb {
 <script>
 // ── Data ──────────────────────────────────────────────────────
 const PHONES = [
+  {
+    "model": "Honor WIN",
+    "bat": 10000,
+    "chg": 120,
+    "cam": 86,
+    "disp": 6.82,
+    "stor": 256,
+    "ram": 12,
+    "price": 649,
+    "os": "china rom"
+  },
+  {
+    "model": "OPPO Find X9 Ultra",
+    "bat": 7050,
+    "chg": 100,
+    "cam": 96,
+    "disp": 6.83,
+    "stor": 256,
+    "ram": 12,
+    "price": 1199,
+    "os": "china rom"
+  },
+  {
+    "model": "Xiaomi 17 Ultra",
+    "bat": 6800,
+    "chg": 90,
+    "cam": 96,
+    "disp": 6.9,
+    "stor": 512,
+    "ram": 12,
+    "price": 999,
+    "os": "china rom"
+  },
+  {
+    "model": "Xiaomi 17",
+    "bat": 7000,
+    "chg": 100,
+    "cam": 86,
+    "disp": 6.3,
+    "stor": 256,
+    "ram": 12,
+    "price": 649,
+    "os": "china rom"
+  },
+  {
+    "model": "OnePlus 15",
+    "bat": 7300,
+    "chg": 120,
+    "cam": 92,
+    "disp": 6.78,
+    "stor": 256,
+    "ram": 12,
+    "price": 679,
+    "os": "global rom"
+  },
+  {
+    "model": "Vivo X300 Ultra",
+    "bat": 6600,
+    "chg": 100,
+    "cam": 94,
+    "disp": 6.82,
+    "stor": 256,
+    "ram": 12,
+    "price": 1099,
+    "os": "china rom"
+  },
+  {
+    "model": "Vivo X300 Pro",
+    "bat": 6510,
+    "chg": 90,
+    "cam": 97,
+    "disp": 6.78,
+    "stor": 256,
+    "ram": 12,
+    "price": 799,
+    "os": "china rom"
+  },
+  {
+    "model": "Iqoo 15T",
+    "bat": 8000,
+    "chg": 100,
+    "cam": 79,
+    "disp": 6.82,
+    "stor": 256,
+    "ram": 12,
+    "price": 699,
+    "os": "china rom"
+  },
+  {
+    "model": "Iqoo 15 Ultra",
+    "bat": 7400,
+    "chg": 100,
+    "cam": 84,
+    "disp": 6.85,
+    "stor": 512,
+    "ram": 16,
+    "price": 899,
+    "os": "china rom"
+  },
+  {
+    "model": "Iqoo 15",
+    "bat": 7000,
+    "chg": 100,
+    "cam": 89,
+    "disp": 6.82,
+    "stor": 256,
+    "ram": 12,
+    "price": 649,
+    "os": "china rom"
+  },
+  {
+    "model": "Iqoo Z11 Turbo",
+    "bat": 7600,
+    "chg": 100,
+    "cam": 75,
+    "disp": 6.59,
+    "stor": 256,
+    "ram": 12,
+    "price": 469,
+    "os": "china rom"
+  },
+  {
+    "model": "Iqoo Neo 11",
+    "bat": 7500,
+    "chg": 100,
+    "cam": 74,
+    "disp": 6.82,
+    "stor": 256,
+    "ram": 12,
+    "price": 459,
+    "os": "china rom"
+  },
+  {
+    "model": "Xiaomi 17 Pro Max",
+    "bat": 7500,
+    "chg": 100,
+    "cam": 94,
+    "disp": 6.9,
+    "stor": 512,
+    "ram": 12,
+    "price": 899,
+    "os": "china rom"
+  },
+  {
+    "model": "Redmi K90 Max",
+    "bat": 8550,
+    "chg": 100,
+    "cam": 77,
+    "disp": 6.83,
+    "stor": 256,
+    "ram": 12,
+    "price": 499,
+    "os": "china rom"
+  },
+  {
+    "model": "Redmagic 11S Pro Plus",
+    "bat": 7500,
+    "chg": 120,
+    "cam": 77,
+    "disp": 6.85,
+    "stor": 512,
+    "ram": 16,
+    "price": 1299,
+    "os": "china rom"
+  },
+  {
+    "model": "Realme GT8 Pro",
+    "bat": 7000,
+    "chg": 120,
+    "cam": 86,
+    "disp": 6.79,
+    "stor": 256,
+    "ram": 12,
+    "price": 639,
+    "os": "china rom"
+  },
+  {
+    "model": "OPPO Find X9 Ultra",
+    "bat": 7050,
+    "chg": 100,
+    "cam": 96,
+    "disp": 6.83,
+    "stor": 256,
+    "ram": 12,
+    "price": 1599,
+    "os": "global rom"
+  },
+  {
+    "model": "Redmagic 11 Pro Plus",
+    "bat": 7500,
+    "chg": 120,
+    "cam": 77,
+    "disp": 6.85,
+    "stor": 256,
+    "ram": 12,
+    "price": 899,
+    "os": "global rom"
+  },
+  {
+    "model": "Honor WIN RT",
+    "bat": 10000,
+    "chg": 100,
+    "cam": 86,
+    "disp": 6.83,
+    "stor": 256,
+    "ram": 12,
+    "price": 549,
+    "os": "china rom"
+  },
+  {
+    "model": "Honor Power 2",
+    "bat": 10080,
+    "chg": 80,
+    "cam": 81,
+    "disp": 6.79,
+    "stor": 256,
+    "ram": 12,
+    "price": 499,
+    "os": "china rom"
+  },
+  {
+    "model": "Realme GT8",
+    "bat": 7000,
+    "chg": 100,
+    "cam": 81,
+    "disp": 6.79,
+    "stor": 256,
+    "ram": 12,
+    "price": 499,
+    "os": "china rom"
+  },
+  {
+    "model": "OnePlus Ace6 Ultra",
+    "bat": 8600,
+    "chg": 120,
+    "cam": 80,
+    "disp": 6.79,
+    "stor": 256,
+    "ram": 12,
+    "price": 659,
+    "os": "china rom"
+  }
+];
+
+// ── Base scoring (v4 exact) ───────────────────────────────────
+const BASE_MAX = { os:25, bat:23, price:10, stor:20, chg:20, disp:12, cam:15 };
+
+function base(p) {
+  const bat = p.bat < 6500 ? 0 : p.bat <= 7500 ? ((p.bat-6500)/1000)*20 : p.bat >= 10000 ? 23 : 20+((p.bat-7500)/2500)*3;
+  const pr  = p.price <= 500 ? 10 : p.price <= 800 ? 10-((p.price-500)/300)*4 : p.price <= 1000 ? 6-((p.price-800)/200)*3 : Math.max(0,3*Math.exp(-0.002*(p.price-1000)));
+  const cam = p.cam >= 95 ? 13+((p.cam-95)/5)*2 : p.cam >= 85 ? 10+((p.cam-85)/10)*3 : p.cam >= 70 ? 5+((p.cam-70)/15)*5 : Math.max(0,(p.cam/70)*5);
+  return {
+    os:    p.os === 'global' ? 25 : 15,
+    bat,
+    price: pr,
+    stor:  p.stor >= 1024 ? 20 : p.stor >= 512 ? 15 : p.stor >= 256 ? 10 : 5,
+    chg:   p.chg >= 120 ? 20 : p.chg >= 100 ? 10 : p.chg >= 90 ? 5 : 0,
+    disp:  p.disp >= 6.9 ? 12 : p.disp >= 6.78 ? 10 : 0,
+    cam,
+  };
+}
+
+// ── Config ────────────────────────────────────────────────────
+const CATS = [
+  { key:'os',    label:'Global ROM',     hint:'25 pts global vs 15 pts china — a decisive advantage',  dflt:25, max:40 },
+  { key:'bat',   label:'Battery',        hint:'Sweet spot 6500–7500 mAh · smaller bonus above 7500',   dflt:23, max:40 },
+  { key:'price', label:'Price',          hint:'Soft curve — phones above $1000 lose points gradually',  dflt:10, max:25 },
+  { key:'stor',  label:'Storage',        hint:'256 GB = 10 · 512 GB = 15 · 1 TB = 20',                  dflt:20, max:30 },
+  { key:'chg',   label:'Charging',       hint:'120W = 20 · 100W = 10 · 90W = 5 — skewed toward fast',  dflt:20, max:35 },
+  { key:'disp',  label:'Display',        hint:'6.78" = 10 · 6.9"+ = 12 · below 6.78" is excluded',     dflt:12, max:20 },
+  { key:'cam',   label:'Camera',         hint:'Nanoreview composite 0–100 maps to 0–15 pts',           dflt:15, max:30 },
+];
+const DBS = [
+  { key:'bat',  label:'Battery < 6500 mAh', test: p => p.bat  < 6500  },
+  { key:'chg',  label:'Charging < 90 W',    test: p => p.chg  < 90    },
+  { key:'disp', label:'Display < 6.78"',    test: p => p.disp < 6.78  },
+];
+const PRESETS = {
+  balanced: { os:25, bat:23, price:10, stor:20, chg:20, disp:12, cam:15 },
+  value:    { os:20, bat:20, price:25, stor:15, chg:18, disp:10, cam:8  },
+  camera:   { os:18, bat:15, price:8,  stor:15, chg:15, disp:12, cam:30 },
+  speed:    { os:22, bat:15, price:8,  stor:15, chg:35, disp:12, cam:10 },
+  battery:  { os:18, bat:40, price:10, stor:15, chg:18, disp:10, cam:8  },
+};
+const CLABEL = { os:'ROM', bat:'Battery', price:'Price', stor:'Storage', chg:'Charging', disp:'Display', cam:'Camera' };
+
+let W  = { ...PRESETS.balanced };
+let DB = { bat:true, chg:true, disp:true };
+
+// ── Build presets ─────────────────────────────────────────────
+const pWrap = document.getElementById('presets');
+Object.keys(PRESETS).forEach(k => {
+  const b = document.createElement('button');
+  b.className = 'pst' + (k==='balanced'?' on':'');
+  b.textContent = k[0].toUpperCase()+k.slice(1);
+  b.dataset.p = k;
+  b.addEventListener('click', () => {
+    W = { ...PRESETS[k] };
+    CATS.forEach(c => { document.getElementById(`sl-${c.key}`).value = W[c.key]; syncLbl(c.key); });
+    document.querySelectorAll('.pst').forEach(x => x.classList.toggle('on', x.dataset.p===k));
+    render();
+  });
+  pWrap.appendChild(b);
+});
+
+// ── Build sliders ─────────────────────────────────────────────
+const slWrap = document.getElementById('sl-wrap');
+CATS.forEach(c => {
+  const d = document.createElement('div');
+  d.className = 'si';
+  d.innerHTML = `
+    <div class="si-row">
+      <span class="si-name">${c.label}</span>
+      <span class="si-val" id="sv-${c.key}">${c.dflt} pts</span>
+    </div>
+    <input type="range" min="0" max="${c.max}" step="1" value="${c.dflt}" id="sl-${c.key}" aria-label="${c.label}">
+    <div class="si-hint">${c.hint}</div>`;
+  slWrap.appendChild(d);
+  d.querySelector('input').addEventListener('input', e => {
+    W[c.key] = +e.target.value;
+    syncLbl(c.key);
+    document.querySelectorAll('.pst').forEach(x => x.classList.remove('on'));
+    render();
+  });
+});
+function syncLbl(k) {
+  const el = document.getElementById(`sv-${k}`);
+  el.textContent = W[k]+' pts';
+  el.className = 'si-val' + (W[k] < 4 ? ' lo' : '');
+}
+
+// ── Build toggles ─────────────────────────────────────────────
+const dbWrap = document.getElementById('db-wrap');
+DBS.forEach(db => {
+  const d = document.createElement('div');
+  d.className = 'db-row';
+  d.innerHTML = `<span class="db-lbl">${db.label}</span>
+    <label class="tog"><input type="checkbox" checked id="db-${db.key}"><span class="tslide"></span></label>`;
+  dbWrap.appendChild(d);
+  d.querySelector('input').addEventListener('change', e => { DB[db.key] = e.target.checked; render(); });
+});
+
+// ── Score ─────────────────────────────────────────────────────
+function excl(p) { return DBS.filter(db => DB[db.key] && db.test(p)).map(db => db.label); }
+
+function score(p) {
+  const b = base(p); const w = {}; let t = 0;
+  for (const k in b) { w[k] = BASE_MAX[k]>0 ? b[k]*(W[k]/BASE_MAX[k]) : 0; t += w[k]; }
+  return { b, w, total: Math.round(t*10)/10 };
+}
+
+// ── "Why it rocks" ────────────────────────────────────────────
+function whyText(p, sc, rank) {
+  const lines = [];
+  if (p.os === 'global') lines.push(`<b>Only global ROM phone</b> — direct Google updates & broader app support.`);
+  if (p.chg >= 120) lines.push(`<b>120W charging</b> tops the field — back to full in ~30 min.`);
+  if (p.bat >= 9000) lines.push(`<b>${(p.bat/1000).toFixed(0)}k mAh battery</b> is in a class of its own.`);
+  else if (p.bat >= 7400) lines.push(`<b>${p.bat} mAh battery</b> hits the sweet spot perfectly.`);
+  if (p.cam >= 95) lines.push(`<b>NR:${p.cam}</b> — top-tier real-world camera performance.`);
+  else if (p.cam >= 90) lines.push(`<b>NR:${p.cam} camera</b> is excellent for everyday shooting.`);
+  if (p.price <= 650 && p.chg >= 100) lines.push(`Strong specs at just <b>$${p.price}</b> — exceptional value.`);
+  if (p.stor >= 512) lines.push(`<b>${p.stor}GB storage</b> — no compromises on space.`);
+  if (!lines.length) {
+    const sorted = Object.entries(sc.w).sort((a,b)=>b[1]-a[1]);
+    const phrases = { os:'Global ROM gives the edge',bat:'Battery life leads',price:'Best value proposition',stor:'Storage stands out',chg:'Charging speed dominates',disp:'Display size is ideal',cam:'Camera quality shines' };
+    lines.push(phrases[sorted[0][0]] || 'Balanced across all categories.');
+  }
+  return lines.slice(0,2).join(' ');
+}
+
+// ── Popup ─────────────────────────────────────────────────────
+const popup  = document.getElementById('popup');
+const popName= document.getElementById('pop-name');
+const popGrid= document.getElementById('pop-grid');
+const popWhy = document.getElementById('pop-why');
+let hideTimer;
+
+function showPopup(p, sc, rank, rect) {
+  clearTimeout(hideTimer);
+  popName.textContent = p.model;
+  popGrid.innerHTML = [
+    { val: `${(p.bat/1000).toFixed(1)}k mAh`, key:'Battery' },
+    { val: `${p.chg}W`,                        key:'Charging' },
+    { val: `$${p.price}`,                      key:'Price' },
+    { val: `NR:${p.cam}`,                      key:'Camera' },
+    { val: `${p.disp}"`,                        key:'Display' },
+    { val: `${p.stor}GB`,                       key:'Storage' },
+  ].map(s=>`<div class="pop-spec"><div class="pop-spec-val">${s.val}</div><div class="pop-spec-key">${s.key}</div></div>`).join('');
+  popWhy.innerHTML = whyText(p, sc, rank);
+
+  // Position: right of card on desktop, below on mobile
+  const vw = window.innerWidth;
+  let left, top;
+  if (vw > 900) {
+    left = Math.min(rect.right + 12, vw - 296);
+    top  = Math.max(8, Math.min(rect.top, window.innerHeight - 320));
+  } else {
+    left = Math.max(8, Math.min(rect.left, vw - 296));
+    top  = rect.bottom + 8;
+    if (top + 300 > window.innerHeight) top = rect.top - 310;
+  }
+  popup.style.left = left + 'px';
+  popup.style.top  = top  + 'px';
+  popup.classList.add('show');
+}
+function hidePopup() {
+  hideTimer = setTimeout(() => popup.classList.remove('show'), 80);
+}
+popup.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+popup.addEventListener('mouseleave', hidePopup);
+
+// ── Render ────────────────────────────────────────────────────
+function render() {
+  const all = PHONES.map(p => { const e = excl(p); return { p, sc: e.length?null:score(p), e }; });
+  const q   = all.filter(r=>!r.e.length).sort((a,b)=>b.sc.total-a.sc.total);
+  const ex  = all.filter(r=> r.e.length);
+  const top = q[0]?.sc.total || 1;
+
+  // Why bar
+  const wb = document.getElementById('why-wrap');
+  if (q.length) {
+    const t=q[0], r=q[1];
+    const sorted=Object.entries(t.sc.w).sort((a,b)=>b[1]-a[1]);
+    const [k1,k2]=[sorted[0][0],sorted[1][0]];
+    let txt=`<strong>${t.p.model}</strong> leads on <em>${CLABEL[k1]}</em> and <em>${CLABEL[k2]}</em>`;
+    if(t.p.os==='global') txt+=` — the only global ROM option in the pool`;
+    txt+='.';
+    if(r){ const gap=(t.sc.total-r.sc.total).toFixed(1); txt+=` <strong>${r.p.model}</strong> trails by <em>${gap} pts</em>.`; }
+    wb.innerHTML=`<div class="why-bar">📡 ${txt}</div>`;
+  } else wb.innerHTML='';
+
+  // Excl note
+  const en=document.getElementById('excl-note');
+  en.innerHTML=ex.length?`<div class="excl-note"><b>${ex.length} excluded</b> · deal-breakers: ${ex.map(r=>r.p.model.split(' ')[0]).join(', ')}</div>`:'';
+
+  // Cards
+  const cw=document.getElementById('cards-wrap');
+  cw.innerHTML='';
+
+  const rankCls = i => i===1?'r-gold':i===2?'r-silver':i===3?'r-bronze':'r-n';
+
+  q.forEach(({ p, sc }, i) => {
+    const rank=i+1;
+    const pct=Math.round((sc.total/top)*100);
+    const maxW=Math.max(...Object.values(sc.w));
+    const bkd=Object.entries(sc.w).map(([k,v])=>`<span class="bd${v>=maxW*.8?' hi':''}"><b>${v.toFixed(1)}</b> ${CLABEL[k]}</span>`).join('');
+    const chipHot = k => sc.w[k] >= maxW*.7;
+
+    const card=document.createElement('div');
+    card.className='rcard'+(rank===1?' top':'');
+    card.innerHTML=`
+      <div class="rc-top">
+        <span class="rc-rank ${rankCls(rank)}">#${rank}</span>
+        <div class="rc-info">
+          <div class="rc-model">${p.model}</div>
+          <div class="rc-chips">
+            <span class="chip ${p.os==='global'?'c-global':'c-china'}">${p.os==='global'?'Global ROM':'China ROM'}</span>
+            <span class="chip ${chipHot('chg')?'c-hot':'c-spec'}">⚡ ${p.chg}W</span>
+            <span class="chip ${chipHot('bat')?'c-hot':'c-spec'}">🔋 ${(p.bat/1000).toFixed(1)}k</span>
+            <span class="chip c-spec">$${p.price}</span>
+            <span class="chip ${chipHot('cam')?'c-hot':'c-spec'}">📷 NR${p.cam}</span>
+            <span class="chip c-spec">${p.stor}GB</span>
+          </div>
+        </div>
+        <div class="rc-score">
+          <div class="sc-num">${sc.total.toFixed(1)}</div>
+          <div class="sc-pct">${pct}%</div>
+        </div>
+      </div>
+      <div class="bar-t"><div class="bar-f ${rank===1?'bar-gold':'bar-g'}" style="width:${pct}%"></div></div>
+      <div class="rc-bkd">${bkd}</div>`;
+
+    // Hover popup
+    card.addEventListener('mouseenter', () => {
+      const rect = card.getBoundingClientRect();
+      showPopup(p, sc, rank, rect);
+    });
+    card.addEventListener('mouseleave', hidePopup);
+    cw.appendChild(card);
+  });
+
+  ex.forEach(({ p, e }) => {
+    const card=document.createElement('div');
+    card.className='rcard excl';
+    card.innerHTML=`
+      <div class="rc-top">
+        <span class="rc-rank r-n">—</span>
+        <div class="rc-info">
+          <div class="rc-model">${p.model}</div>
+          <div class="excl-r">${e.join(' · ')}</div>
+        </div>
+      </div>`;
+    cw.appendChild(card);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────
+CATS.forEach(c => syncLbl(c.key));
+render();
+</script>
+</body>
+</html>::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green); }
+
+/* ── Header ──────────────────────────────────── */
+.hdr {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(2,3,6,0.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--edge);
+}
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark {
+  width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+  background: var(--gd); border: 1px solid rgba(0,255,65,.3);
+  display: grid; place-items: center; font-size: 15px;
+}
+.logo-text { font-size: 15px; font-weight: 800; letter-spacing: -.3px; color: var(--text); }
+.logo-text em { color: var(--green); font-style: normal; }
+.logo-tag { font-size: 9px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-top: 1px; }
+
+.presets { display: flex; gap: 4px; }
+.pst {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  padding: 5px 11px; border-radius: 20px; cursor: pointer; letter-spacing: .03em;
+  border: 1px solid var(--edge); background: transparent; color: var(--muted);
+  transition: all .15s;
+}
+.pst:hover  { border-color: var(--green); color: var(--green); }
+.pst.on { border-color: var(--green); color: var(--green); background: var(--gd); box-shadow: 0 0 10px rgba(0,255,65,.15); }
+
+/* ── Layout ──────────────────────────────────── */
+.wrap {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  height: calc(100vh - 58px);
+  margin-top: 58px;
+}
+.panel, .main { overflow-y: auto; height: 100%; }
+.panel { border-right: 1px solid var(--edge); padding: 22px 18px; }
+.main  { padding: 18px 20px; }
+
+@media (max-width: 720px) {
+  body { overflow-y: auto; }
+  .wrap { display: block; height: auto; margin-top: 58px; }
+  .panel { overflow-y: visible; height: auto; border-right: none; border-bottom: 1px solid var(--edge); }
+  .main  { overflow-y: visible; height: auto; }
+  .presets { display: none; }
+}
+
+/* ── Section label ───────────────────────────── */
+.slbl {
+  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.slbl::after { content: ''; flex: 1; height: 1px; background: var(--edge); }
+
+/* ── Sliders ─────────────────────────────────── */
+.si { margin-bottom: 17px; }
+.si-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.si-name { font-size: 13px; font-weight: 600; }
+.si-val {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--green); min-width: 44px; text-align: right;
+  transition: color .15s;
+  text-shadow: 0 0 8px rgba(0,255,65,.5);
+}
+.si-val.lo { color: var(--muted); text-shadow: none; }
+.si-hint { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 3px; border-radius: 2px; outline: none; cursor: pointer;
+  background: var(--edge);
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px; height: 15px; border-radius: 50%; cursor: pointer;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(0,255,65,.6);
+  transition: transform .1s;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.4);
+  box-shadow: 0 0 18px rgba(0,255,65,.9);
+}
+input[type=range]::-moz-range-thumb {
+  width: 15px; height: 15px; border-radius: 50%; border: none;
+  background: var(--green); box-shadow: 0 0 10px rgba(0,255,65,.6);
+}
+
+/* ── Deal-breaker toggles ────────────────────── */
+.db-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.db-lbl { font-size: 12px; color: var(--silver); }
+.tog { position: relative; display: inline-block; width: 34px; height: 18px; }
+.tog input { opacity: 0; width: 0; height: 0; }
+.tslide {
+  position: absolute; inset: 0; border-radius: 18px;
+  background: var(--edge); cursor: pointer; transition: background .2s;
+}
+.tslide::before {
+  content: ''; position: absolute;
+  width: 12px; height: 12px; left: 3px; bottom: 3px;
+  border-radius: 50%; background: var(--muted); transition: .2s;
+}
+.tog input:checked + .tslide { background: rgba(0,255,65,.2); }
+.tog input:checked + .tslide::before { transform: translateX(16px); background: var(--green); box-shadow: 0 0 8px rgba(0,255,65,.7); }
+
+/* ── Why bar ─────────────────────────────────── */
+.why-bar {
+  background: linear-gradient(135deg, rgba(0,255,65,.05), rgba(255,23,68,.03));
+  border: 1px solid rgba(0,255,65,.2);
+  border-radius: 10px; padding: 12px 16px;
+  font-size: 13px; line-height: 1.65; color: var(--silver);
+  margin-bottom: 16px;
+}
+.why-bar strong { color: var(--green); font-weight: 700; }
+.why-bar em { color: #FF9800; font-style: normal; font-weight: 600; }
+
+.excl-note { font-size: 11.5px; color: var(--muted); margin-bottom: 12px; }
+.excl-note b { color: var(--red); }
+
+/* ── Rank cards ──────────────────────────────── */
+.rcard {
+  background: var(--shell);
+  border: 1px solid var(--edge);
+  border-left: 3px solid transparent;
+  border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 8px;
+  position: relative; cursor: default;
+  transition: border-color .2s, background .2s, transform .15s;
+}
+.rcard:not(.excl):hover {
+  background: var(--card);
+  border-color: rgba(0,255,65,.25);
+  border-left-color: var(--green);
+  transform: translateX(3px);
+}
+.rcard.top {
+  background: var(--card);
+  border-left-color: var(--gold);
+  border-color: rgba(255,214,0,.3);
+  box-shadow: 0 0 20px rgba(255,214,0,.06);
+}
+.rcard.top::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 1px; background: linear-gradient(90deg, var(--gold) 30%, transparent);
+  border-radius: 12px 12px 0 0;
+}
+.rcard.excl { opacity: .25; border-left-color: var(--red); border-color: var(--rd); cursor: default; }
+
+.rc-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 9px; }
+.rc-rank {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  min-width: 26px; padding-top: 2px; text-align: center; flex-shrink: 0;
+}
+.r-gold   { color: var(--gold); text-shadow: 0 0 8px rgba(255,214,0,.6); }
+.r-silver { color: #B0BEC5; }
+.r-bronze { color: #A0785A; }
+.r-n      { color: var(--muted); }
+
+.rc-info { flex: 1; min-width: 0; }
+.rc-model {
+  font-size: 14px; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 5px;
+}
+.rc-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 20px; white-space: nowrap; letter-spacing: .02em;
+}
+.c-global { background: var(--gd); color: var(--green); border: 1px solid rgba(0,255,65,.2); }
+.c-china  { background: rgba(139,92,246,.1); color: #A78BFA; border: 1px solid rgba(139,92,246,.2); }
+.c-spec   { background: rgba(255,255,255,.04); color: var(--silver); border: 1px solid var(--edge); }
+.c-hot    { background: rgba(0,255,65,.12); color: var(--green); border: 1px solid rgba(0,255,65,.25); }
+.c-red    { background: var(--rd); color: var(--red); border: 1px solid rgba(255,23,68,.25); }
+
+.rc-score { text-align: right; flex-shrink: 0; }
+.sc-num {
+  font-family: var(--mono); font-size: 22px; font-weight: 700; line-height: 1;
+  color: var(--green); text-shadow: 0 0 12px rgba(0,255,65,.4);
+}
+.rcard.top .sc-num { color: var(--gold); text-shadow: 0 0 12px rgba(255,214,0,.4); }
+.sc-pct { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.bar-t { height: 2px; background: var(--edge); border-radius: 2px; margin: 9px 0 8px; }
+.bar-f { height: 2px; border-radius: 2px; transition: width .35s ease; }
+.bar-g { background: linear-gradient(90deg, var(--green), rgba(0,255,65,.2)); }
+.bar-gold { background: linear-gradient(90deg, var(--gold), rgba(255,214,0,.2)); }
+
+.rc-bkd { display: flex; flex-wrap: wrap; gap: 3px; }
+.bd {
+  font-size: 10px; padding: 2px 5px; border-radius: 4px;
+  background: rgba(255,255,255,.025); border: 1px solid var(--edge);
+  color: var(--muted);
+}
+.bd b { font-family: var(--mono); font-weight: 400; color: var(--text); }
+.bd.hi b { color: var(--green); }
+
+.excl-r { font-size: 11px; color: var(--red); margin-top: 6px; }
+
+/* ── Hover Popup ─────────────────────────────── */
+#popup {
+  position: fixed; z-index: 200; pointer-events: none;
+  width: 280px;
+  background: var(--card);
+  border: 1px solid rgba(0,255,65,.3);
+  border-radius: 14px; padding: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.7), 0 0 30px rgba(0,255,65,.06);
+  opacity: 0; transform: translateY(6px) scale(.97);
+  transition: opacity .15s, transform .15s;
+}
+#popup.show { opacity: 1; transform: translateY(0) scale(1); }
+
+.pop-name {
+  font-size: 15px; font-weight: 800; color: var(--text);
+  margin-bottom: 12px; line-height: 1.2;
+  border-bottom: 1px solid var(--edge); padding-bottom: 10px;
+}
+.pop-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 12px;
+}
+.pop-spec { display: flex; flex-direction: column; gap: 2px; }
+.pop-spec-val {
+  font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--green);
+}
+.pop-spec-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
+.pop-why {
+  background: var(--gd2); border: 1px solid var(--gd);
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 12px; line-height: 1.6; color: var(--silver);
+}
+.pop-why b { color: var(--green); font-weight: 700; }
+.pop-why-label {
+  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--green); margin-bottom: 4px;
+  opacity: .7;
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-mark">📡</div>
+    <div>
+      <div class="logo-text">Signal <em>EQ</em></div>
+      <div class="logo-tag">Phone preference equalizer</div>
+    </div>
+  </div>
+  <div class="presets" id="presets"></div>
+</header>
+
+<div class="wrap">
+  <aside class="panel">
+    <div class="slbl">Weight allocation</div>
+    <div id="sl-wrap"></div>
+    <div style="margin-top:20px">
+      <div class="slbl">Deal-breakers</div>
+      <div id="db-wrap"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div id="why-wrap"></div>
+    <div id="excl-note"></div>
+    <div id="cards-wrap"></div>
+  </main>
+</div>
+
+<!-- Hover popup -->
+<div id="popup">
+  <div class="pop-name" id="pop-name"></div>
+  <div class="pop-grid" id="pop-grid"></div>
+  <div class="pop-why">
+    <div class="pop-why-label">★ Why it ranks here</div>
+    <div id="pop-why"></div>
+  </div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────
+const PHONES = [
   { model:'Honor WIN',             bat:10000,chg:120,cam:86,disp:6.82,stor:256, ram:12,price:649, os:'china'  },
   { model:'OPPO Find X9 Ultra',    bat:7050, chg:100,cam:96,disp:6.83,stor:256, ram:12,price:1199,os:'china'  },
   { model:'Xiaomi 17 Ultra',       bat:6800, chg:90, cam:96,disp:6.90,stor:512, ram:12,price:999, os:'china'  },
