@@ -283,14 +283,17 @@ input[type=range]::-moz-range-thumb {
 <body>
 
 <header class="hdr">
-  <div class="logo">
+  <a href="index.html" class="logo">
     <div class="logo-mark">📡</div>
     <div>
       <div class="logo-text">Signal <em>EQ</em></div>
       <div class="logo-tag">Phone preference equalizer</div>
     </div>
+  </a>
+  <div class="presets" id="presets">
+    <a href="index.html" class="pst on" style="text-decoration:none">Flagships</a>
+    <a href="index_budget_phones.html" class="pst" style="text-decoration:none">Budget</a>
   </div>
-  <div class="presets" id="presets"></div>
 </header>
 
 <div class="wrap">
@@ -332,7 +335,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 649,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "OPPO Find X9 Ultra",
@@ -343,7 +346,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 1199,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Xiaomi 17 Ultra",
@@ -354,7 +357,7 @@ const PHONES = [
     "stor": 512,
     "ram": 12,
     "price": 999,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Xiaomi 17",
@@ -365,7 +368,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 649,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "OnePlus 15",
@@ -376,7 +379,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 679,
-    "os": "global rom"
+    "os": "global"
   },
   {
     "model": "Vivo X300 Ultra",
@@ -387,7 +390,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 1099,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Vivo X300 Pro",
@@ -398,7 +401,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 799,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Iqoo 15T",
@@ -409,7 +412,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 699,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Iqoo 15 Ultra",
@@ -420,7 +423,7 @@ const PHONES = [
     "stor": 512,
     "ram": 16,
     "price": 899,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Iqoo 15",
@@ -431,7 +434,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 649,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Iqoo Z11 Turbo",
@@ -442,7 +445,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 469,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Iqoo Neo 11",
@@ -453,7 +456,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 459,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Xiaomi 17 Pro Max",
@@ -464,7 +467,7 @@ const PHONES = [
     "stor": 512,
     "ram": 12,
     "price": 899,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Redmi K90 Max",
@@ -475,7 +478,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 499,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Redmagic 11S Pro Plus",
@@ -486,7 +489,7 @@ const PHONES = [
     "stor": 512,
     "ram": 16,
     "price": 1299,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Realme GT8 Pro",
@@ -497,7 +500,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 639,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "OPPO Find X9 Ultra",
@@ -508,7 +511,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 1599,
-    "os": "global rom"
+    "os": "global"
   },
   {
     "model": "Redmagic 11 Pro Plus",
@@ -519,7 +522,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 899,
-    "os": "global rom"
+    "os": "global"
   },
   {
     "model": "Honor WIN RT",
@@ -530,7 +533,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 549,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Honor Power 2",
@@ -541,7 +544,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 499,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "Realme GT8",
@@ -552,7 +555,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 499,
-    "os": "china rom"
+    "os": "china"
   },
   {
     "model": "OnePlus Ace6 Ultra",
@@ -563,18 +566,7 @@ const PHONES = [
     "stor": 256,
     "ram": 12,
     "price": 659,
-    "os": "china rom"
-  },
-  {
-    "model": "iPhone 17 Pro Max",
-    "bat": 4823,
-    "chg": 25,
-    "cam": 95,
-    "disp": 6.9,
-    "stor": 256,
-    "ram": 12,
-    "price": 1199,
-    "os": "china rom"
+    "os": "china"
   }
 ];
 
