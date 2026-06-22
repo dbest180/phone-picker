@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal EQ — Stop reading spec sheets. Start dialing them in.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:   #020306;
+  --shell:  #0B0B1A;
+  --card:   #0F0F22;
+  --edge:   #181834;
+  --green:  #00FF41;
+  --gd:     rgba(0,255,65,0.12);
+  --gd2:    rgba(0,255,65,0.06);
+  --gold:   #FFD600;
+  --text:   #D8E8F8;
+  --muted:  #3C3C60;
+  --silver: #7890A8;
+  --mono:   'Space Mono', monospace;
+  --sans:   'Space Grotesk', system-ui, sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--void);color:var(--text);overflow-x:hidden;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:2px;}
+
+/* ── bg texture ── */
+.noise{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(0,255,65,.05), transparent 45%),
+    radial-gradient(circle at 85% 0%, rgba(255,214,0,.04), transparent 40%);
+}
+.scan{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 3px);
+}
+
+/* ── header ── */
+.hdr{
+  position:fixed; top:0; left:0; right:0; z-index:100; height:58px;
+  display:flex; align-items:center; justify-content:space-between; padding:0 24px;
+  background:rgba(2,3,6,.88); backdrop-filter:blur(20px); border-bottom:1px solid var(--edge);
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0;background:var(--gd);border:1px solid rgba(0,255,65,.3);display:grid;place-items:center;font-size:15px;}
+.logo-text{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--text);}
+.logo-text em{color:var(--green);font-style:normal;}
+.hdr-cta{
+  font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.03em;
+  padding:8px 16px;border-radius:20px;border:1px solid var(--green);color:var(--green);
+  text-decoration:none;transition:all .15s;
+}
+.hdr-cta:hover{background:var(--gd);box-shadow:0 0 14px rgba(0,255,65,.2);}
+
+main{position:relative;z-index:1;}
+
+/* ── hero ── */
+.hero{
+  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+  padding:120px 24px 60px; max-width:1100px; margin:0 auto;
+}
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--green); margin-bottom:22px; display:flex; align-items:center; gap:10px;
+  opacity:0; animation: fadeUp .6s ease forwards; animation-delay:.1s;
+}
+.eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+h1{
+  font-size:clamp(2.4rem, 6vw, 4.6rem); font-weight:800; line-height:1.04; letter-spacing:-.02em;
+  max-width:880px; margin-bottom:24px;
+  opacity:0; animation: fadeUp .7s ease forwards; animation-delay:.2s;
+}
+h1 .g{color:var(--green); text-shadow:0 0 24px rgba(0,255,65,.35);}
+h1 .strike{position:relative; color:var(--muted);}
+h1 .strike::after{content:'';position:absolute;left:-2%;right:-2%;top:50%;height:2px;background:var(--muted);transform:rotate(-3deg);}
+
+.sub{
+  font-size:clamp(1rem,1.6vw,1.2rem); color:var(--silver); max-width:560px; line-height:1.6; margin-bottom:36px;
+  opacity:0; animation: fadeUp .7s ease forwards; animation-delay:.32s;
+}
+.sub b{color:var(--text);}
+
+.cta-row{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:56px; opacity:0; animation:fadeUp .7s ease forwards; animation-delay:.44s;}
+.btn{
+  font-family:var(--sans); font-size:14px; font-weight:700; letter-spacing:.02em;
+  padding:14px 26px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:9px;
+  transition: transform .15s, box-shadow .15s;
+}
+.btn-primary{background:var(--green); color:#001a06; box-shadow:0 0 0 1px rgba(0,255,65,.4), 0 8px 30px rgba(0,255,65,.15);}
+.btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 0 1px var(--green), 0 12px 36px rgba(0,255,65,.3);}
+.btn-ghost{background:transparent;border:1px solid var(--edge); color:var(--text);}
+.btn-ghost:hover{border-color:var(--silver); transform:translateY(-2px);}
+
+/* ── signature: live equalizer ── */
+.eq-rig{
+  opacity:0; animation:fadeUp .8s ease forwards; animation-delay:.5s;
+  background:var(--shell); border:1px solid var(--edge); border-radius:16px;
+  padding:22px 22px 16px; max-width:680px;
+}
+.eq-rig-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:18px;}
+.eq-rig-label{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.eq-rig-live{font-family:var(--mono); font-size:10px; color:var(--green);}
+.eq-bands{display:flex; align-items:flex-end; gap:14px; height:120px; margin-bottom:6px;}
+.eq-band{flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end;}
+.eq-track{
+  position:relative; width:6px; flex:1; background:var(--edge); border-radius:4px; overflow:hidden; cursor:pointer;
+}
+.eq-fill{
+  position:absolute; bottom:0; left:0; width:100%; border-radius:4px;
+  background:linear-gradient(180deg, var(--green), rgba(0,255,65,.25));
+  box-shadow:0 0 10px rgba(0,255,65,.35);
+  transition: height .5s cubic-bezier(.34,1.56,.64,1);
+}
+.eq-num{font-family:var(--mono); font-size:10px; color:var(--green); font-weight:700;}
+.eq-tag{font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:.05em; text-transform:uppercase;}
+.eq-result{
+  margin-top:14px; padding-top:14px; border-top:1px solid var(--edge);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.eq-result-name{font-size:13px; font-weight:700;}
+.eq-result-sub{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:2px;}
+.eq-result-score{font-family:var(--mono); font-size:20px; font-weight:700; color:var(--gold); text-shadow:0 0 12px rgba(255,214,0,.4);}
+
+@keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+/* ── how it works ── */
+.section{ max-width:1100px; margin:0 auto; padding:90px 24px; }
+.slabel{
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--green);
+  display:flex; align-items:center; gap:10px; margin-bottom:14px;
+}
+.slabel::after{content:'';flex:1;height:1px;background:var(--edge);}
+.sec-title{font-size:clamp(1.6rem,3vw,2.2rem); font-weight:800; margin-bottom:46px; max-width:600px; letter-spacing:-.01em;}
+
+.steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+.step{
+  background:var(--shell); border:1px solid var(--edge); border-radius:14px; padding:24px;
+  position:relative; transition:border-color .2s, transform .2s;
+}
+.step:hover{border-color:rgba(0,255,65,.3); transform:translateY(-3px);}
+.step-mark{font-family:var(--mono); font-size:11px; color:var(--green); margin-bottom:14px;}
+.step h3{font-size:16px; font-weight:700; margin-bottom:8px;}
+.step p{font-size:13px; color:var(--silver); line-height:1.6;}
+
+@media (max-width:760px){ .steps{grid-template-columns:1fr;} }
+
+/* ── why bar live demo strip ── */
+.tape{
+  background:linear-gradient(135deg, rgba(0,255,65,.04), rgba(255,214,0,.02));
+  border-top:1px solid var(--edge); border-bottom:1px solid var(--edge);
+  padding:18px 0; overflow:hidden; white-space:nowrap;
+}
+.tape-inner{display:inline-block; animation:scroll 28s linear infinite;}
+.tape span{font-family:var(--mono); font-size:12px; color:var(--silver); margin-right:48px;}
+.tape span b{color:var(--green);}
+@keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+
+/* ── presets grid ── */
+.pgrid{display:grid; grid-template-columns:repeat(5,1fr); gap:10px;}
+.pcard{
+  background:var(--card); border:1px solid var(--edge); border-radius:12px; padding:16px 14px;
+  transition:border-color .2s;
+}
+.pcard:hover{border-color:rgba(0,255,65,.3);}
+.pcard .pn{font-size:13px; font-weight:700; margin-bottom:8px;}
+.pcard .pd{font-size:11px; color:var(--muted); line-height:1.5;}
+@media (max-width:900px){ .pgrid{grid-template-columns:repeat(2,1fr);} }
+
+/* ── twin tools ── */
+.tools{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+@media (max-width:760px){ .tools{grid-template-columns:1fr;} }
+.tcard{
+  background:var(--shell); border:1px solid var(--edge); border-radius:16px; padding:30px;
+  text-decoration:none; color:var(--text); display:block; position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
+}
+.tcard:hover{transform:translateY(-3px);}
+.tcard.flag{border-color:rgba(0,255,65,.25);}
+.tcard.flag:hover{border-color:var(--green); box-shadow:0 0 30px rgba(0,255,65,.08);}
+.tcard.bud{border-color:rgba(255,214,0,.2);}
+.tcard.bud:hover{border-color:var(--gold); box-shadow:0 0 30px rgba(255,214,0,.08);}
+.tcard .ttag{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:14px; display:inline-block; padding:3px 10px; border-radius:20px;}
+.tcard.flag .ttag{color:var(--green); background:var(--gd); border:1px solid rgba(0,255,65,.25);}
+.tcard.bud .ttag{color:var(--gold); background:rgba(255,214,0,.08); border:1px solid rgba(255,214,0,.25);}
+.tcard h3{font-size:22px; font-weight:800; margin-bottom:10px;}
+.tcard p{font-size:13.5px; color:var(--silver); line-height:1.6; margin-bottom:18px;}
+.tcard .tgo{font-family:var(--mono); font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;}
+.tcard.flag .tgo{color:var(--green);}
+.tcard.bud .tgo{color:var(--gold);}
+
+/* ── footer ── */
+.ftr{
+  border-top:1px solid var(--edge); padding:34px 24px; text-align:center;
+  font-family:var(--mono); font-size:11px; color:var(--muted);
+}
+.ftr b{color:var(--silver);}
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="scan"></div>
+
+<header class="hdr">
+  <a href="#" class="logo">
+    <div class="logo-mark">📡</div>
+    <div class="logo-text">Signal <em>EQ</em></div>
+  </a>
+  <a href="index.html" class="hdr-cta">Open the equalizer →</a>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">No more 40-tab comparison spreadsheets</div>
+    <h1>Spec sheets lie by <span class="strike">omission</span>.<br>Your <span class="g">priorities</span> shouldn't.</h1>
+    <p class="sub">Every phone review ranks battery, camera, and charging the same way — like every reader wants the same phone. <b>Signal EQ</b> turns the ranking into a mixing board: drag what matters to you, mute the rest, and watch 20+ flagship and budget Android phones re-sort in real time.</p>
+    <div class="cta-row">
+      <a href="index.html" class="btn btn-primary">Tune the flagships →</a>
+      <a href="index_budget_phones.html" class="btn btn-ghost">Tune the budget tier →</a>
+    </div>
+
+    <div class="eq-rig">
+      <div class="eq-rig-top">
+        <span class="eq-rig-label">Live weight allocation</span>
+        <span class="eq-rig-live" id="liveTag">● recalculating</span>
+      </div>
+      <div class="eq-bands" id="eqBands"></div>
+      <div class="eq-result">
+        <div>
+          <div class="eq-result-name" id="eqWinner">—</div>
+          <div class="eq-result-sub" id="eqWinnerSub">drag a band, change the winner</div>
+        </div>
+        <div class="eq-result-score" id="eqScore">—</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tape">
+    <div class="tape-inner">
+      <span><b>OnePlus 15</b> leads on Charging and Display.</span>
+      <span><b>Xiaomi 17 Ultra</b> trails by 3.2 pts.</span>
+      <span><b>Vivo X300 Pro</b> tops Camera at NR:97.</span>
+      <span><b>Honor WIN</b> runs a class-leading 10,000mAh cell.</span>
+      <span><b>OnePlus 15</b> leads on Charging and Display.</span>
+      <span><b>Xiaomi 17 Ultra</b> trails by 3.2 pts.</span>
+      <span><b>Vivo X300 Pro</b> tops Camera at NR:97.</span>
+      <span><b>Honor WIN</b> runs a class-leading 10,000mAh cell.</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="slabel">How the rig works</div>
+    <h2 class="sec-title">Three moves, one ranking that's actually yours.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-mark">DRAG</div>
+        <h3>Set your weights</h3>
+        <p>Seven sliders — ROM, battery, price, storage, charging, display, camera. Push what you care about up, pull the rest down. The math updates as you move.</p>
+      </div>
+      <div class="step">
+        <div class="step-mark">CUT</div>
+        <h3>Set deal-breakers</h3>
+        <p>Some specs aren't a preference, they're a wall. Flip a toggle to hard-exclude any phone under your battery, charging, or display floor — no amount of weighting saves it.</p>
+      </div>
+      <div class="step">
+        <div class="step-mark">READ</div>
+        <h3>See why, not just who</h3>
+        <p>Every rank card breaks down its score by category, and hovering shows the plain-language reason a phone landed where it did. No black box.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">Presets, if you'd rather not drag</div>
+    <h2 class="sec-title">Five starting points, tuned per tier.</h2>
+    <div class="pgrid">
+      <div class="pcard"><div class="pn">Balanced</div><div class="pd">The default mix. No category dominates.</div></div>
+      <div class="pcard"><div class="pn">Value</div><div class="pd">Price carries the most weight in the model.</div></div>
+      <div class="pcard"><div class="pn">Camera</div><div class="pd">Nanoreview camera score weighted highest.</div></div>
+      <div class="pcard"><div class="pn">Speed</div><div class="pd">Charging wattage (and perf, on Budget) leads.</div></div>
+      <div class="pcard"><div class="pn">Battery</div><div class="pd">mAh capacity overrides everything else.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">Pick your tier</div>
+    <h2 class="sec-title">Same engine, two different price brackets.</h2>
+    <div class="tools">
+      <a href="index.html" class="tcard flag">
+        <span class="ttag">$450 – $1,600</span>
+        <h3>Flagships</h3>
+        <p>22 current-gen flagships, weighted toward global ROM access, top-tier camera scores, and 100W+ charging. For people who want the best spec on the shelf.</p>
+        <span class="tgo">Open the flagship rig →</span>
+      </a>
+      <a href="index_budget_phones.html" class="tcard bud">
+        <span class="ttag">$199 – $629</span>
+        <h3>Budget</h3>
+        <p>20 budget and mid-range phones with a sharper price curve and a judgment-based performance tier — built for a bracket where every dollar shows up on the scoreboard.</p>
+        <span class="tgo">Open the budget rig →</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="ftr">
+    Signal EQ — a phone preference equalizer. Specs sourced from public listings; weighting is yours. <b>Not a buying recommendation, a thinking tool.</b>
+  </footer>
+</main>
+
+<script>
+// Mini live equalizer demo — purely illustrative, cycles through example weightings
+const BANDS = [
+  { tag:'ROM',  base:60 },
+  { tag:'BAT',  base:75 },
+  { tag:'PRICE',base:35 },
+  { tag:'STOR', base:55 },
+  { tag:'CHG',  base:80 },
+  { tag:'DISP', base:40 },
+  { tag:'CAM',  base:50 },
+];
+const WINNERS = [
+  { name:'OnePlus 15', sub:'Charging + Display lead', score:'34.2' },
+  { name:'Xiaomi 17 Ultra', sub:'Camera + Storage lead', score:'31.8' },
+  { name:'Vivo X300 Pro', sub:'Camera dominant, NR:97', score:'29.6' },
+  { name:'Honor WIN', sub:'Battery far ahead, 10k mAh', score:'33.1' },
+  { name:'Iqoo 15 Ultra', sub:'Storage + Charging lead', score:'30.4' },
+];
+
+const wrap = document.getElementById('eqBands');
+const fills = [];
+BANDS.forEach((b) => {
+  const band = document.createElement('div');
+  band.className = 'eq-band';
+  band.innerHTML = `
+    <span class="eq-num" data-num>${b.base}</span>
+    <div class="eq-track"><div class="eq-fill" style="height:${b.base}%"></div></div>
+    <span class="eq-tag">${b.tag}</span>`;
+  wrap.appendChild(band);
+  fills.push(band.querySelector('.eq-fill'));
+});
+
+let i = 0;
+function cycle() {
+  BANDS.forEach((b, idx) => {
+    const jitter = Math.round((Math.random()*50)-25);
+    const val = Math.max(8, Math.min(95, b.base + jitter));
+    fills[idx].style.height = val + '%';
+    fills[idx].parentElement.parentElement.querySelector('[data-num]').textContent = val;
+  });
+  const w = WINNERS[i % WINNERS.length];
+  document.getElementById('eqWinner').textContent = w.name;
+  document.getElementById('eqWinnerSub').textContent = w.sub;
+  document.getElementById('eqScore').textContent = w.score;
+  i++;
+}
+cycle();
+setInterval(cycle, 2600);
+
+// click a track to nudge it manually (just visual delight, not wired to real scoring)
+document.querySelectorAll('.eq-track').forEach(track => {
+  track.addEventListener('click', (e) => {
+    const rect = track.getBoundingClientRect();
+    const pct = Math.round(100 - ((e.clientY - rect.top) / rect.height) * 100);
+    const v = Math.max(5, Math.min(98, pct));
+    track.querySelector('.eq-fill').style.height = v + '%';
+    track.parentElement.querySelector('[data-num]').textContent = v;
+    document.getElementById('liveTag').textContent = '● updated';
+    setTimeout(()=>document.getElementById('liveTag').textContent='● recalculating', 800);
+  });
+});
+</script>
+</body>
+</html>
