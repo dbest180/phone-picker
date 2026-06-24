@@ -3,833 +3,475 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Signal EQ — Phone Equalizer</title>
+<title>Signal EQ — Stop reading spec sheets. Start dialing them in.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --void:   #020306;
-  --deep:   #06060E;
   --shell:  #0B0B1A;
   --card:   #0F0F22;
   --edge:   #181834;
-  --rim:    #252548;
   --green:  #00FF41;
   --gd:     rgba(0,255,65,0.12);
   --gd2:    rgba(0,255,65,0.06);
-  --red:    #FF1744;
-  --rd:     rgba(255,23,68,0.12);
   --gold:   #FFD600;
-  --gld:    rgba(255,214,0,0.12);
   --text:   #D8E8F8;
   --muted:  #3C3C60;
   --silver: #7890A8;
   --mono:   'Space Mono', monospace;
   --sans:   'Space Grotesk', system-ui, sans-serif;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: var(--sans); background: var(--void); color: var(--text); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--void);color:var(--text);overflow-x:hidden;}
+@media (prefers-reduced-motion: reduce){ *{animation-duration:.01ms !important; transition-duration:.01ms !important;} }
 
-/* ── Scrollbars ──────────────────────────────── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--green); }
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--muted);border-radius:2px;}
 
-/* ── Header ──────────────────────────────────── */
-.hdr {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: 58px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 20px;
-  background: rgba(2,3,6,0.9);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--edge);
+/* ── bg texture ── */
+.noise{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(0,255,65,.05), transparent 45%),
+    radial-gradient(circle at 85% 0%, rgba(255,214,0,.04), transparent 40%);
 }
-.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.logo-mark {
-  width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
-  background: var(--gd); border: 1px solid rgba(0,255,65,.3);
-  display: grid; place-items: center; font-size: 15px;
-}
-.logo-text { font-size: 15px; font-weight: 800; letter-spacing: -.3px; color: var(--text); }
-.logo-text em { color: var(--green); font-style: normal; }
-.logo-tag { font-size: 9px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-top: 1px; }
-
-.presets { display: flex; gap: 4px; }
-.pst {
-  font-family: var(--sans); font-size: 11px; font-weight: 600;
-  padding: 5px 11px; border-radius: 20px; cursor: pointer; letter-spacing: .03em;
-  border: 1px solid var(--edge); background: transparent; color: var(--muted);
-  transition: all .15s;
-}
-.pst:hover  { border-color: var(--green); color: var(--green); }
-.pst.on { border-color: var(--green); color: var(--green); background: var(--gd); box-shadow: 0 0 10px rgba(0,255,65,.15); }
-
-/* ── Layout ──────────────────────────────────── */
-.wrap {
-  display: grid;
-  grid-template-columns: 270px 1fr;
-  height: calc(100vh - 58px);
-  margin-top: 58px;
-}
-.panel, .main { overflow-y: auto; height: 100%; }
-.panel { border-right: 1px solid var(--edge); padding: 22px 18px; }
-.main  { padding: 18px 20px; }
-
-@media (max-width: 720px) {
-  body { overflow-y: auto; }
-  .wrap { display: block; height: auto; margin-top: 58px; }
-  .panel { overflow-y: visible; height: auto; border-right: none; border-bottom: 1px solid var(--edge); }
-  .main  { overflow-y: visible; height: auto; }
-  .presets { display: none; }
+.scan{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:repeating-linear-gradient(180deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 3px);
 }
 
-/* ── Section label ───────────────────────────── */
-.slbl {
-  font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 14px;
-  display: flex; align-items: center; gap: 8px;
+/* ── header ── */
+.hdr{
+  position:fixed; top:0; left:0; right:0; z-index:100; height:58px;
+  display:flex; align-items:center; justify-content:space-between; padding:0 24px;
+  background:rgba(2,3,6,.88); backdrop-filter:blur(20px); border-bottom:1px solid var(--edge);
 }
-.slbl::after { content: ''; flex: 1; height: 1px; background: var(--edge); }
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0;background:var(--gd);border:1px solid rgba(0,255,65,.3);display:grid;place-items:center;font-size:15px;}
+.logo-text{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--text);}
+.logo-text em{color:var(--green);font-style:normal;}
+.hdr-cta{
+  font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.03em;
+  padding:8px 16px;border-radius:20px;border:1px solid var(--green);color:var(--green);
+  text-decoration:none;transition:all .15s;
+}
+.hdr-cta:hover{background:var(--gd);box-shadow:0 0 14px rgba(0,255,65,.2);}
 
-/* ── Sliders ─────────────────────────────────── */
-.si { margin-bottom: 17px; }
-.si-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.si-name { font-size: 13px; font-weight: 600; }
-.si-val {
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
-  color: var(--green); min-width: 44px; text-align: right;
-  transition: color .15s;
-  text-shadow: 0 0 8px rgba(0,255,65,.5);
-}
-.si-val.lo { color: var(--muted); text-shadow: none; }
-.si-hint { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+main{position:relative;z-index:1;}
 
-input[type=range] {
-  -webkit-appearance: none; appearance: none;
-  width: 100%; height: 3px; border-radius: 2px; outline: none; cursor: pointer;
-  background: var(--edge);
+/* ── hero ── */
+.hero{
+  min-height:100vh; display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:40px;
+  padding:120px 24px 60px; max-width:1280px; margin:0 auto;
 }
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 15px; height: 15px; border-radius: 50%; cursor: pointer;
-  background: var(--green);
-  box-shadow: 0 0 10px rgba(0,255,65,.6);
-  transition: transform .1s;
+.hero-copy{ min-width:0; }
+.hero-art{
+  position:relative; display:flex; align-items:center; justify-content:center;
+  opacity:0; animation:fadeUp 1s ease forwards; animation-delay:.3s;
 }
-input[type=range]::-webkit-slider-thumb:hover {
-  transform: scale(1.4);
-  box-shadow: 0 0 18px rgba(0,255,65,.9);
-}
-input[type=range]::-moz-range-thumb {
-  width: 15px; height: 15px; border-radius: 50%; border: none;
-  background: var(--green); box-shadow: 0 0 10px rgba(0,255,65,.6);
+.hero-art svg{ width:100%; max-width:480px; height:auto; }
+@media (max-width:980px){
+  .hero{ grid-template-columns:1fr; padding-top:96px; }
+  .hero-art{ order:-1; max-width:340px; margin:0 auto 8px; }
+  .hero-art svg{ max-width:280px; }
 }
 
-/* ── Deal-breaker toggles ────────────────────── */
-.db-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.db-lbl { font-size: 12px; color: var(--silver); }
-.tog { position: relative; display: inline-block; width: 34px; height: 18px; }
-.tog input { opacity: 0; width: 0; height: 0; }
-.tslide {
-  position: absolute; inset: 0; border-radius: 18px;
-  background: var(--edge); cursor: pointer; transition: background .2s;
+/* signature art tokens */
+.sig-bar{ transition: height .6s cubic-bezier(.34,1.56,.64,1), y .6s cubic-bezier(.34,1.56,.64,1); }
+.sig-green{ fill:var(--green); }
+.sig-gold{ fill:var(--gold); }
+.sig-dim{ fill:var(--edge); }
+.sig-line{ stroke:var(--edge); stroke-width:1; }
+.sig-ring{ fill:none; stroke:var(--green); stroke-width:1; opacity:.35; }
+.sig-ring2{ fill:none; stroke:var(--gold); stroke-width:1; opacity:.25; }
+.sig-dot{ fill:var(--muted); }
+.sig-phone{ fill:none; stroke:var(--silver); stroke-width:1.4; opacity:.55; }
+.sig-glow{ filter:drop-shadow(0 0 14px rgba(0,255,65,.35)); }
+#sigBars rect{ animation: sigBreath 5.5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+#sigBars rect:nth-child(2){ animation-delay:.15s; }
+#sigBars rect:nth-child(3){ animation-delay:.3s; }
+#sigBars rect:nth-child(4){ animation-delay:.45s; }
+#sigBars rect:nth-child(5){ animation-delay:.6s; }
+#sigBars rect:nth-child(6){ animation-delay:.75s; }
+#sigBars rect:nth-child(7){ animation-delay:.9s; }
+#sigBars rect:nth-child(8){ animation-delay:.9s; }
+#sigBars rect:nth-child(9){ animation-delay:.75s; }
+#sigBars rect:nth-child(10){ animation-delay:.6s; }
+#sigBars rect:nth-child(11){ animation-delay:.45s; }
+#sigBars rect:nth-child(12){ animation-delay:.3s; }
+#sigBars rect:nth-child(13){ animation-delay:.15s; }
+@keyframes sigBreath{ 0%,100%{ transform:scaleY(1); } 50%{ transform:scaleY(1.06); } }
+.sig-ring, .sig-ring2{ animation: sigPulse 3.4s ease-in-out infinite; }
+.sig-ring2{ animation-delay:.4s; }
+@keyframes sigPulse{ 0%,100%{ opacity:.18; } 50%{ opacity:.42; } }
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--green); margin-bottom:22px; display:flex; align-items:center; gap:10px;
+  opacity:0; animation: fadeUp .6s ease forwards; animation-delay:.1s;
 }
-.tslide::before {
-  content: ''; position: absolute;
-  width: 12px; height: 12px; left: 3px; bottom: 3px;
-  border-radius: 50%; background: var(--muted); transition: .2s;
-}
-.tog input:checked + .tslide { background: rgba(0,255,65,.2); }
-.tog input:checked + .tslide::before { transform: translateX(16px); background: var(--green); box-shadow: 0 0 8px rgba(0,255,65,.7); }
+.eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 
-/* ── Why bar ─────────────────────────────────── */
-.why-bar {
-  background: linear-gradient(135deg, rgba(0,255,65,.05), rgba(255,23,68,.03));
-  border: 1px solid rgba(0,255,65,.2);
-  border-radius: 10px; padding: 12px 16px;
-  font-size: 13px; line-height: 1.65; color: var(--silver);
-  margin-bottom: 16px;
+h1{
+  font-size:clamp(2.4rem, 6vw, 4.6rem); font-weight:800; line-height:1.04; letter-spacing:-.02em;
+  max-width:880px; margin-bottom:24px;
+  opacity:0; animation: fadeUp .7s ease forwards; animation-delay:.2s;
 }
-.why-bar strong { color: var(--green); font-weight: 700; }
-.why-bar em { color: #FF9800; font-style: normal; font-weight: 600; }
+h1 .g{color:var(--green); text-shadow:0 0 24px rgba(0,255,65,.35);}
+h1 .strike{position:relative; color:var(--muted);}
+h1 .strike::after{content:'';position:absolute;left:-2%;right:-2%;top:50%;height:2px;background:var(--muted);transform:rotate(-3deg);}
 
-.excl-note { font-size: 11.5px; color: var(--muted); margin-bottom: 12px; }
-.excl-note b { color: var(--red); }
+.sub{
+  font-size:clamp(1rem,1.6vw,1.2rem); color:var(--silver); max-width:560px; line-height:1.6; margin-bottom:36px;
+  opacity:0; animation: fadeUp .7s ease forwards; animation-delay:.32s;
+}
+.sub b{color:var(--text);}
 
-/* ── Rank cards ──────────────────────────────── */
-.rcard {
-  background: var(--shell);
-  border: 1px solid var(--edge);
-  border-left: 3px solid transparent;
-  border-radius: 12px; padding: 14px 16px;
-  margin-bottom: 8px;
-  position: relative; cursor: default;
-  transition: border-color .2s, background .2s, transform .15s;
+.cta-row{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:56px; opacity:0; animation:fadeUp .7s ease forwards; animation-delay:.44s;}
+.btn{
+  font-family:var(--sans); font-size:14px; font-weight:700; letter-spacing:.02em;
+  padding:14px 26px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:9px;
+  transition: transform .15s, box-shadow .15s;
 }
-.rcard:not(.excl):hover {
-  background: var(--card);
-  border-color: rgba(0,255,65,.25);
-  border-left-color: var(--green);
-  transform: translateX(3px);
-}
-.rcard.top {
-  background: var(--card);
-  border-left-color: var(--gold);
-  border-color: rgba(255,214,0,.3);
-  box-shadow: 0 0 20px rgba(255,214,0,.06);
-}
-.rcard.top::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0;
-  height: 1px; background: linear-gradient(90deg, var(--gold) 30%, transparent);
-  border-radius: 12px 12px 0 0;
-}
-.rcard.excl { opacity: .25; border-left-color: var(--red); border-color: var(--rd); cursor: default; }
+.btn-primary{background:var(--green); color:#001a06; box-shadow:0 0 0 1px rgba(0,255,65,.4), 0 8px 30px rgba(0,255,65,.15);}
+.btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 0 1px var(--green), 0 12px 36px rgba(0,255,65,.3);}
+.btn-ghost{background:transparent;border:1px solid var(--edge); color:var(--text);}
+.btn-ghost:hover{border-color:var(--silver); transform:translateY(-2px);}
 
-.rc-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 9px; }
-.rc-rank {
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
-  min-width: 26px; padding-top: 2px; text-align: center; flex-shrink: 0;
+/* ── signature: live equalizer ── */
+.eq-rig{
+  opacity:0; animation:fadeUp .8s ease forwards; animation-delay:.5s;
+  background:var(--shell); border:1px solid var(--edge); border-radius:16px;
+  padding:22px 22px 16px; max-width:680px;
 }
-.r-gold   { color: var(--gold); text-shadow: 0 0 8px rgba(255,214,0,.6); }
-.r-silver { color: #B0BEC5; }
-.r-bronze { color: #A0785A; }
-.r-n      { color: var(--muted); }
+.eq-rig-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:18px;}
+.eq-rig-label{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);}
+.eq-rig-live{font-family:var(--mono); font-size:10px; color:var(--green);}
+.eq-bands{display:flex; align-items:flex-end; gap:14px; height:120px; margin-bottom:6px;}
+.eq-band{flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end;}
+.eq-track{
+  position:relative; width:6px; flex:1; background:var(--edge); border-radius:4px; overflow:hidden; cursor:pointer;
+}
+.eq-fill{
+  position:absolute; bottom:0; left:0; width:100%; border-radius:4px;
+  background:linear-gradient(180deg, var(--green), rgba(0,255,65,.25));
+  box-shadow:0 0 10px rgba(0,255,65,.35);
+  transition: height .5s cubic-bezier(.34,1.56,.64,1);
+}
+.eq-num{font-family:var(--mono); font-size:10px; color:var(--green); font-weight:700;}
+.eq-tag{font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:.05em; text-transform:uppercase;}
+.eq-result{
+  margin-top:14px; padding-top:14px; border-top:1px solid var(--edge);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.eq-result-name{font-size:13px; font-weight:700;}
+.eq-result-sub{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:2px;}
+.eq-result-score{font-family:var(--mono); font-size:20px; font-weight:700; color:var(--gold); text-shadow:0 0 12px rgba(255,214,0,.4);}
 
-.rc-info { flex: 1; min-width: 0; }
-.rc-model {
-  font-size: 14px; font-weight: 700;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  margin-bottom: 5px;
-}
-.rc-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.chip {
-  font-size: 10px; font-weight: 600; padding: 2px 7px;
-  border-radius: 20px; white-space: nowrap; letter-spacing: .02em;
-}
-.c-global { background: var(--gd); color: var(--green); border: 1px solid rgba(0,255,65,.2); }
-.c-china  { background: rgba(139,92,246,.1); color: #A78BFA; border: 1px solid rgba(139,92,246,.2); }
-.c-spec   { background: rgba(255,255,255,.04); color: var(--silver); border: 1px solid var(--edge); }
-.c-hot    { background: rgba(0,255,65,.12); color: var(--green); border: 1px solid rgba(0,255,65,.25); }
-.c-red    { background: var(--rd); color: var(--red); border: 1px solid rgba(255,23,68,.25); }
+@keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
 
-.rc-score { text-align: right; flex-shrink: 0; }
-.sc-num {
-  font-family: var(--mono); font-size: 22px; font-weight: 700; line-height: 1;
-  color: var(--green); text-shadow: 0 0 12px rgba(0,255,65,.4);
+/* ── how it works ── */
+.section{ max-width:1100px; margin:0 auto; padding:90px 24px; }
+.slabel{
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--green);
+  display:flex; align-items:center; gap:10px; margin-bottom:14px;
 }
-.rcard.top .sc-num { color: var(--gold); text-shadow: 0 0 12px rgba(255,214,0,.4); }
-.sc-pct { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+.slabel::after{content:'';flex:1;height:1px;background:var(--edge);}
+.sec-title{font-size:clamp(1.6rem,3vw,2.2rem); font-weight:800; margin-bottom:46px; max-width:600px; letter-spacing:-.01em;}
 
-.bar-t { height: 2px; background: var(--edge); border-radius: 2px; margin: 9px 0 8px; }
-.bar-f { height: 2px; border-radius: 2px; transition: width .35s ease; }
-.bar-g { background: linear-gradient(90deg, var(--green), rgba(0,255,65,.2)); }
-.bar-gold { background: linear-gradient(90deg, var(--gold), rgba(255,214,0,.2)); }
+.steps{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+.step{
+  background:var(--shell); border:1px solid var(--edge); border-radius:14px; padding:24px;
+  position:relative; transition:border-color .2s, transform .2s;
+}
+.step:hover{border-color:rgba(0,255,65,.3); transform:translateY(-3px);}
+.step-mark{font-family:var(--mono); font-size:11px; color:var(--green); margin-bottom:14px;}
+.step h3{font-size:16px; font-weight:700; margin-bottom:8px;}
+.step p{font-size:13px; color:var(--silver); line-height:1.6;}
 
-.rc-bkd { display: flex; flex-wrap: wrap; gap: 3px; }
-.bd {
-  font-size: 10px; padding: 2px 5px; border-radius: 4px;
-  background: rgba(255,255,255,.025); border: 1px solid var(--edge);
-  color: var(--muted);
-}
-.bd b { font-family: var(--mono); font-weight: 400; color: var(--text); }
-.bd.hi b { color: var(--green); }
+@media (max-width:760px){ .steps{grid-template-columns:1fr;} }
 
-.excl-r { font-size: 11px; color: var(--red); margin-top: 6px; }
+/* ── why bar live demo strip ── */
+.tape{
+  background:linear-gradient(135deg, rgba(0,255,65,.04), rgba(255,214,0,.02));
+  border-top:1px solid var(--edge); border-bottom:1px solid var(--edge);
+  padding:18px 0; overflow:hidden; white-space:nowrap;
+}
+.tape-inner{display:inline-block; animation:scroll 28s linear infinite;}
+.tape span{font-family:var(--mono); font-size:12px; color:var(--silver); margin-right:48px;}
+.tape span b{color:var(--green);}
+@keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
-/* ── Hover Popup ─────────────────────────────── */
-#popup {
-  position: fixed; z-index: 200; pointer-events: none;
-  width: 280px;
-  background: var(--card);
-  border: 1px solid rgba(0,255,65,.3);
-  border-radius: 14px; padding: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.7), 0 0 30px rgba(0,255,65,.06);
-  opacity: 0; transform: translateY(6px) scale(.97);
-  transition: opacity .15s, transform .15s;
+/* ── presets grid ── */
+.pgrid{display:grid; grid-template-columns:repeat(5,1fr); gap:10px;}
+.pcard{
+  background:var(--card); border:1px solid var(--edge); border-radius:12px; padding:16px 14px;
+  transition:border-color .2s;
 }
-#popup.show { opacity: 1; transform: translateY(0) scale(1); }
+.pcard:hover{border-color:rgba(0,255,65,.3);}
+.pcard .pn{font-size:13px; font-weight:700; margin-bottom:8px;}
+.pcard .pd{font-size:11px; color:var(--muted); line-height:1.5;}
+@media (max-width:900px){ .pgrid{grid-template-columns:repeat(2,1fr);} }
 
-.pop-name {
-  font-size: 15px; font-weight: 800; color: var(--text);
-  margin-bottom: 12px; line-height: 1.2;
-  border-bottom: 1px solid var(--edge); padding-bottom: 10px;
+/* ── twin tools ── */
+.tools{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+@media (max-width:760px){ .tools{grid-template-columns:1fr;} }
+.tcard{
+  background:var(--shell); border:1px solid var(--edge); border-radius:16px; padding:30px;
+  text-decoration:none; color:var(--text); display:block; position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
 }
-.pop-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-bottom: 12px;
+.tcard:hover{transform:translateY(-3px);}
+.tcard.flag{border-color:rgba(0,255,65,.25);}
+.tcard.flag:hover{border-color:var(--green); box-shadow:0 0 30px rgba(0,255,65,.08);}
+.tcard.bud{border-color:rgba(255,214,0,.2);}
+.tcard.bud:hover{border-color:var(--gold); box-shadow:0 0 30px rgba(255,214,0,.08);}
+.tcard .ttag{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:14px; display:inline-block; padding:3px 10px; border-radius:20px;}
+.tcard.flag .ttag{color:var(--green); background:var(--gd); border:1px solid rgba(0,255,65,.25);}
+.tcard.bud .ttag{color:var(--gold); background:rgba(255,214,0,.08); border:1px solid rgba(255,214,0,.25);}
+.tcard h3{font-size:22px; font-weight:800; margin-bottom:10px;}
+.tcard p{font-size:13.5px; color:var(--silver); line-height:1.6; margin-bottom:18px;}
+.tcard .tgo{font-family:var(--mono); font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px;}
+.tcard.flag .tgo{color:var(--green);}
+.tcard.bud .tgo{color:var(--gold);}
+
+/* ── footer ── */
+.ftr{
+  border-top:1px solid var(--edge); padding:34px 24px; text-align:center;
+  font-family:var(--mono); font-size:11px; color:var(--muted);
 }
-.pop-spec { display: flex; flex-direction: column; gap: 2px; }
-.pop-spec-val {
-  font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--green);
-}
-.pop-spec-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; }
-.pop-why {
-  background: var(--gd2); border: 1px solid var(--gd);
-  border-radius: 8px; padding: 10px 12px;
-  font-size: 12px; line-height: 1.6; color: var(--silver);
-}
-.pop-why b { color: var(--green); font-weight: 700; }
-.pop-why-label {
-  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--green); margin-bottom: 4px;
-  opacity: .7;
-}
+.ftr b{color:var(--silver);}
 </style>
 </head>
 <body>
 
+<div class="noise"></div>
+<div class="scan"></div>
+
 <header class="hdr">
-  <a href="index.html" class="logo">
+  <a href="#" class="logo">
     <div class="logo-mark">📡</div>
-    <div>
-      <div class="logo-text">Signal <em>EQ</em></div>
-      <div class="logo-tag">Phone preference equalizer</div>
-    </div>
+    <div class="logo-text">Signal <em>EQ</em></div>
   </a>
-  <div class="presets" id="presets">
-    <a href="index.html" class="pst" style="text-decoration:none">Flagships</a>
-    <a href="index_budget_phones.html" class="pst on" style="text-decoration:none">Budget</a>
-  </div>
+  <a href="flagships.html" class="hdr-cta">Open the equalizer →</a>
 </header>
-    
-<div class="wrap">
-  <aside class="panel">
-    <div class="slbl">Weight allocation</div>
-    <div id="sl-wrap"></div>
-    <div style="margin-top:20px">
-      <div class="slbl">Deal-breakers</div>
-      <div id="db-wrap"></div>
-    </div>
-  </aside>
 
-  <main class="main">
-    <div id="why-wrap"></div>
-    <div id="excl-note"></div>
-    <div id="cards-wrap"></div>
-  </main>
-</div>
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">No more 40-tab comparison spreadsheets</div>
+      <h1>Spec sheets lie by <span class="strike">omission</span>.<br>Your <span class="g">priorities</span> shouldn't.</h1>
+      <p class="sub">Every phone review ranks battery, camera, and charging the same way — like every reader wants the same phone. <b>Signal EQ</b> turns the ranking into a mixing board: drag what matters to you, mute the rest, and watch 20+ flagship and budget Android phones re-sort in real time.</p>
+      <div class="cta-row">
+        <a href="flagships.html" class="btn btn-primary">Tune the flagships →</a>
+        <a href="index_budget_phones.html" class="btn btn-ghost">Tune the budget tier →</a>
+      </div>
 
-<!-- Hover popup -->
-<div id="popup">
-  <div class="pop-name" id="pop-name"></div>
-  <div class="pop-grid" id="pop-grid"></div>
-  <div class="pop-why">
-    <div class="pop-why-label">★ Why it ranks here</div>
-    <div id="pop-why"></div>
-  </div>
-</div>
-
-<script>
-// ── Data ──────────────────────────────────────────────────────
-const PHONES = [
-  {
-    "model": "Honor 400",
-    "bat": 7200,
-    "chg": 80,
-    "cam": 81,
-    "disp": 6.55,
-    "stor": 256,
-    "ram": 12,
-    "price": 439,
-    "os": "china"
-  },
-  {
-    "model": "Honor 600 SUPER Edition",
-    "bat": 8600,
-    "chg": 80,
-    "cam": 87,
-    "disp": 6.57,
-    "stor": 256,
-    "ram": 12,
-    "price": 599,
-    "os": "china"
-  },
-  {
-    "model": "Honor GT",
-    "bat": 5300,
-    "chg": 80,
-    "cam": 75,
-    "disp": 6.7,
-    "stor": 256,
-    "ram": 12,
-    "price": 399,
-    "os": "china"
-  },
-  {
-    "model": "Honor power 2",
-    "bat": 10080,
-    "chg": 80,
-    "cam": 72,
-    "disp": 6.79,
-    "stor": 256,
-    "ram": 12,
-    "price": 499,
-    "os": "china"
-  },
-  {
-    "model": "Redmi Note 14",
-    "bat": 5110,
-    "chg": 45,
-    "cam": 64,
-    "disp": 6.67,
-    "stor": 256,
-    "ram": 12,
-    "price": 199,
-    "os": "china"
-  },
-  {
-    "model": "Nothing Phone 3A Pro",
-    "bat": 5000,
-    "chg": 45,
-    "cam": 77,
-    "disp": 6.77,
-    "stor": 256,
-    "ram": 12,
-    "price": 449,
-    "os": "china"
-  },
-  {
-    "model": "OPPO Reno 16",
-    "bat": 6700,
-    "chg": 80,
-    "cam": 85,
-    "disp": 6.32,
-    "stor": 256,
-    "ram": 12,
-    "price": 599,
-    "os": "china"
-  },
-  {
-    "model": "Realme GT 8",
-    "bat": 7000,
-    "chg": 100,
-    "cam": 83,
-    "disp": 6.79,
-    "stor": 256,
-    "ram": 12,
-    "price": 499,
-    "os": "china"
-  },
-  {
-    "model": "OnePlus Ace 6",
-    "bat": 7800,
-    "chg": 120,
-    "cam": 77,
-    "disp": 6.83,
-    "stor": 256,
-    "ram": 12,
-    "price": 479,
-    "os": "china"
-  },
-  {
-    "model": "Realme 15 Pro",
-    "bat": 7000,
-    "chg": 80,
-    "cam": 70,
-    "disp": 6.8,
-    "stor": 256,
-    "ram": 12,
-    "price": 389,
-    "os": "china"
-  },
-  {
-    "model": "Redmagic 10 Air",
-    "bat": 6000,
-    "chg": 80,
-    "cam": 61,
-    "disp": 6.8,
-    "stor": 256,
-    "ram": 12,
-    "price": 539,
-    "os": "china"
-  },
-  {
-    "model": "Realme 12 Pro Plus",
-    "bat": 5000,
-    "chg": 67,
-    "cam": 66,
-    "disp": 6.7,
-    "stor": 256,
-    "ram": 12,
-    "price": 339,
-    "os": "china"
-  },
-  {
-    "model": "Xiaomi 17T",
-    "bat": 7000,
-    "chg": 67,
-    "cam": 88,
-    "disp": 6.59,
-    "stor": 256,
-    "ram": 12,
-    "price": 549,
-    "os": "china"
-  },
-  {
-    "model": "OnePlus Turbo 6",
-    "bat": 9000,
-    "chg": 80,
-    "cam": 74,
-    "disp": 6.78,
-    "stor": 256,
-    "ram": 12,
-    "price": 429,
-    "os": "china"
-  },
-  {
-    "model": "Redmi K90 Max",
-    "bat": 8550,
-    "chg": 100,
-    "cam": 77,
-    "disp": 6.83,
-    "stor": 256,
-    "ram": 12,
-    "price": 499,
-    "os": "china"
-  },
-  {
-    "model": "OnePlus Ace 6T",
-    "bat": 8300,
-    "chg": 100,
-    "cam": 82,
-    "disp": 6.83,
-    "stor": 256,
-    "ram": 12,
-    "price": 429,
-    "os": "china"
-  },
-  {
-    "model": "Redmi K90",
-    "bat": 7100,
-    "chg": 100,
-    "cam": 79,
-    "disp": 6.59,
-    "stor": 256,
-    "ram": 12,
-    "price": 439,
-    "os": "china"
-  },
-  {
-    "model": "Redmi K90 Pro Max",
-    "bat": 7560,
-    "chg": 100,
-    "cam": 82,
-    "disp": 6.9,
-    "stor": 256,
-    "ram": 12,
-    "price": 629,
-    "os": "china"
-  },
-  {
-    "model": "Redmi Note 14 Pro Plus",
-    "bat": 6200,
-    "chg": 90,
-    "cam": 69,
-    "disp": 6.67,
-    "stor": 256,
-    "ram": 12,
-    "price": 299,
-    "os": "china"
-  },
-  {
-    "model": "OnePlus Turbo 6X Pro",
-    "bat": 8000,
-    "chg": 80,
-    "cam": 68,
-    "disp": 6.78,
-    "stor": 256,
-    "ram": 12,
-    "price": 319,
-    "os": "china"
-  }
-];
-
-// ── Base scoring (Budget v1 — tuned for $300-700 bracket) ────
-const BASE_MAX = { os:18, bat:23, price:28, stor:20, chg:22, disp:12, cam:15, perf:20 };
-
-function base(p) {
-  const bat = p.bat < 6000 ? 0 : p.bat <= 7500 ? ((p.bat-6000)/1500)*20 : p.bat >= 10000 ? 23 : 20+((p.bat-7500)/2500)*3;
-
-  // Price: sharper curve for $300-700 bracket — full pts to ~$380, steep taper to $700, gentle decay after
-  const pr = p.price <= 380 ? 28
-           : p.price <= 550 ? 28-((p.price-380)/170)*14   // 28 -> 14
-           : p.price <= 700 ? 14-((p.price-550)/150)*9    // 14 -> 5
-           : p.price <= 1000 ? 5-((p.price-700)/300)*4    // 5 -> 1
-           : Math.max(0, 1*Math.exp(-0.002*(p.price-1000)));
-
-  const cam = p.cam >= 95 ? 13+((p.cam-95)/5)*2 : p.cam >= 85 ? 10+((p.cam-85)/10)*3 : p.cam >= 70 ? 5+((p.cam-70)/15)*5 : Math.max(0,(p.cam/70)*5);
-
-  // Display: gradual curve, no exclusion — small screens lose points smoothly, not to zero
-  const disp = p.disp >= 6.9  ? 12
-             : p.disp >= 6.78 ? 10
-             : p.disp >= 6.6  ? 8
-             : p.disp >= 6.4  ? 6
-             : Math.max(3, (p.disp/6.4)*6);
-
-  // Charging: finer budget-tier breakpoints (33/67/80/100/120W) instead of flagship cliffs
-  const chg = p.chg >= 120 ? 22
-            : p.chg >= 100 ? 16
-            : p.chg >= 80  ? 12
-            : p.chg >= 67  ? 8
-            : p.chg >= 33  ? 4
-            : 1;
-
-  // Performance: judgment-based tier (1-10 manual rating), not raw benchmarks — avoids gaming-hype skew
-  const perf = Math.max(0, Math.min(20, (p.perf||0) * 2));
-
-  return {
-    os: p.os === 'global' ? 18 : 14,   // narrower gap — global ROM rarer & less decisive at this price
-    bat,
-    price: pr,
-    stor: p.stor >= 1024 ? 20 : p.stor >= 512 ? 15 : p.stor >= 256 ? 10 : 5,
-    chg,
-    disp,
-    cam,
-    perf,
-  };
-}
-
-// ── Config (Budget tier) ───────────────────────────────────────
-const CATS = [
-  { key:'price', label:'Price',          hint:'Full pts to ~$380 · steep taper to $700 · gradual after — this is THE bracket where $ matters',  dflt:28, max:45 },
-  { key:'bat',   label:'Battery',        hint:'Sweet spot 6000–7500 mAh · smaller bonus above 7500',   dflt:23, max:40 },
-  { key:'perf',  label:'Performance',    hint:'Judgment-based tier (not raw benchmarks) — smooth daily use & light gaming, no hype skew',  dflt:20, max:35 },
-  { key:'chg',   label:'Charging',       hint:'120W=22 · 100W=16 · 80W=12 · 67W=8 · 33W=4 — finer steps for budget reality',  dflt:22, max:35 },
-  { key:'cam',   label:'Camera',         hint:'Nanoreview composite 0–100 maps to 0–15 pts · unrated cameras are estimates',  dflt:15, max:30 },
-  { key:'stor',  label:'Storage',        hint:'256 GB = 10 · 512 GB = 15 · 1 TB = 20',                  dflt:20, max:30 },
-  { key:'os',    label:'Global ROM',     hint:'18 pts global vs 14 pts china — present but not decisive at this price',  dflt:18, max:30 },
-  { key:'disp',  label:'Display',        hint:'Gradual curve, no exclusion — smaller screens lose points smoothly, never zeroed',     dflt:12, max:20 },
-];
-const DBS = [
-  { key:'bat',  label:'Battery < 5000 mAh', test: p => p.bat  < 5000  },
-  { key:'chg',  label:'Charging < 33 W',    test: p => p.chg  < 33    },
-];
-const PRESETS = {
-  balanced: { os:18, bat:23, price:28, stor:20, chg:22, disp:12, cam:15, perf:20 },
-  value:    { os:14, bat:18, price:40, stor:12, chg:16, disp:8,  cam:10, perf:14 },
-  camera:   { os:14, bat:15, price:18, stor:12, chg:14, disp:10, cam:30, perf:12 },
-  speed:    { os:14, bat:14, price:15, stor:12, chg:30, disp:10, cam:10, perf:30 },
-  battery:  { os:12, bat:40, price:18, stor:10, chg:16, disp:8,  cam:8,  perf:10 },
-};
-const CLABEL = { os:'ROM', bat:'Battery', price:'Price', stor:'Storage', chg:'Charging', disp:'Display', cam:'Camera', perf:'Performance' };
-
-let W  = { ...PRESETS.balanced };
-let DB = { bat:true, chg:true };
-
-// ── Build presets ─────────────────────────────────────────────
-const pWrap = document.getElementById('presets');
-Object.keys(PRESETS).forEach(k => {
-  const b = document.createElement('button');
-  b.className = 'pst' + (k==='balanced'?' on':'');
-  b.textContent = k[0].toUpperCase()+k.slice(1);
-  b.dataset.p = k;
-  b.addEventListener('click', () => {
-    W = { ...PRESETS[k] };
-    CATS.forEach(c => { document.getElementById(`sl-${c.key}`).value = W[c.key]; syncLbl(c.key); });
-    document.querySelectorAll('.pst').forEach(x => x.classList.toggle('on', x.dataset.p===k));
-    render();
-  });
-  pWrap.appendChild(b);
-});
-
-// ── Build sliders ─────────────────────────────────────────────
-const slWrap = document.getElementById('sl-wrap');
-CATS.forEach(c => {
-  const d = document.createElement('div');
-  d.className = 'si';
-  d.innerHTML = `
-    <div class="si-row">
-      <span class="si-name">${c.label}</span>
-      <span class="si-val" id="sv-${c.key}">${c.dflt} pts</span>
-    </div>
-    <input type="range" min="0" max="${c.max}" step="1" value="${c.dflt}" id="sl-${c.key}" aria-label="${c.label}">
-    <div class="si-hint">${c.hint}</div>`;
-  slWrap.appendChild(d);
-  d.querySelector('input').addEventListener('input', e => {
-    W[c.key] = +e.target.value;
-    syncLbl(c.key);
-    document.querySelectorAll('.pst').forEach(x => x.classList.remove('on'));
-    render();
-  });
-});
-function syncLbl(k) {
-  const el = document.getElementById(`sv-${k}`);
-  el.textContent = W[k]+' pts';
-  el.className = 'si-val' + (W[k] < 4 ? ' lo' : '');
-}
-
-// ── Build toggles ─────────────────────────────────────────────
-const dbWrap = document.getElementById('db-wrap');
-DBS.forEach(db => {
-  const d = document.createElement('div');
-  d.className = 'db-row';
-  d.innerHTML = `<span class="db-lbl">${db.label}</span>
-    <label class="tog"><input type="checkbox" checked id="db-${db.key}"><span class="tslide"></span></label>`;
-  dbWrap.appendChild(d);
-  d.querySelector('input').addEventListener('change', e => { DB[db.key] = e.target.checked; render(); });
-});
-
-// ── Score ─────────────────────────────────────────────────────
-function excl(p) { return DBS.filter(db => DB[db.key] && db.test(p)).map(db => db.label); }
-
-function score(p) {
-  const b = base(p); const w = {}; let t = 0;
-  for (const k in b) { w[k] = BASE_MAX[k]>0 ? b[k]*(W[k]/BASE_MAX[k]) : 0; t += w[k]; }
-  return { b, w, total: Math.round(t*10)/10 };
-}
-
-// ── "Why it rocks" ────────────────────────────────────────────
-function whyText(p, sc, rank) {
-  const lines = [];
-  if (p.os === 'global') lines.push(`<b>Only global ROM phone</b> — direct Google updates & broader app support.`);
-  if (p.chg >= 120) lines.push(`<b>120W charging</b> tops the field — back to full in ~30 min.`);
-  if (p.bat >= 9000) lines.push(`<b>${(p.bat/1000).toFixed(0)}k mAh battery</b> is in a class of its own.`);
-  else if (p.bat >= 7400) lines.push(`<b>${p.bat} mAh battery</b> hits the sweet spot perfectly.`);
-  if (p.cam >= 95) lines.push(`<b>NR:${p.cam}</b> — top-tier real-world camera performance.`);
-  else if (p.cam >= 90) lines.push(`<b>NR:${p.cam} camera</b> is excellent for everyday shooting.`);
-  if (p.price <= 650 && p.chg >= 100) lines.push(`Strong specs at just <b>$${p.price}</b> — exceptional value.`);
-  if (p.stor >= 512) lines.push(`<b>${p.stor}GB storage</b> — no compromises on space.`);
-  if (!lines.length) {
-    const sorted = Object.entries(sc.w).sort((a,b)=>b[1]-a[1]);
-    const phrases = { os:'Global ROM gives the edge',bat:'Battery life leads',price:'Best value proposition',stor:'Storage stands out',chg:'Charging speed dominates',disp:'Display size is ideal',cam:'Camera quality shines' };
-    lines.push(phrases[sorted[0][0]] || 'Balanced across all categories.');
-  }
-  return lines.slice(0,2).join(' ');
-}
-
-// ── Popup ─────────────────────────────────────────────────────
-const popup  = document.getElementById('popup');
-const popName= document.getElementById('pop-name');
-const popGrid= document.getElementById('pop-grid');
-const popWhy = document.getElementById('pop-why');
-let hideTimer;
-
-function showPopup(p, sc, rank, rect) {
-  clearTimeout(hideTimer);
-  popName.textContent = p.model;
-  popGrid.innerHTML = [
-    { val: `${(p.bat/1000).toFixed(1)}k mAh`, key:'Battery' },
-    { val: `${p.chg}W`,                        key:'Charging' },
-    { val: `$${p.price}`,                      key:'Price' },
-    { val: `NR:${p.cam}`,                      key:'Camera' },
-    { val: `${p.disp}"`,                        key:'Display' },
-    { val: `${p.stor}GB`,                       key:'Storage' },
-  ].map(s=>`<div class="pop-spec"><div class="pop-spec-val">${s.val}</div><div class="pop-spec-key">${s.key}</div></div>`).join('');
-  popWhy.innerHTML = whyText(p, sc, rank);
-
-  // Position: right of card on desktop, below on mobile
-  const vw = window.innerWidth;
-  let left, top;
-  if (vw > 900) {
-    left = Math.min(rect.right + 12, vw - 296);
-    top  = Math.max(8, Math.min(rect.top, window.innerHeight - 320));
-  } else {
-    left = Math.max(8, Math.min(rect.left, vw - 296));
-    top  = rect.bottom + 8;
-    if (top + 300 > window.innerHeight) top = rect.top - 310;
-  }
-  popup.style.left = left + 'px';
-  popup.style.top  = top  + 'px';
-  popup.classList.add('show');
-}
-function hidePopup() {
-  hideTimer = setTimeout(() => popup.classList.remove('show'), 80);
-}
-popup.addEventListener('mouseenter', () => clearTimeout(hideTimer));
-popup.addEventListener('mouseleave', hidePopup);
-
-// ── Render ────────────────────────────────────────────────────
-function render() {
-  const all = PHONES.map(p => { const e = excl(p); return { p, sc: e.length?null:score(p), e }; });
-  const q   = all.filter(r=>!r.e.length).sort((a,b)=>b.sc.total-a.sc.total);
-  const ex  = all.filter(r=> r.e.length);
-  const top = q[0]?.sc.total || 1;
-
-  // Why bar
-  const wb = document.getElementById('why-wrap');
-  if (q.length) {
-    const t=q[0], r=q[1];
-    const sorted=Object.entries(t.sc.w).sort((a,b)=>b[1]-a[1]);
-    const [k1,k2]=[sorted[0][0],sorted[1][0]];
-    let txt=`<strong>${t.p.model}</strong> leads on <em>${CLABEL[k1]}</em> and <em>${CLABEL[k2]}</em>`;
-    if(t.p.os==='global') txt+=` — the only global ROM option in the pool`;
-    txt+='.';
-    if(r){ const gap=(t.sc.total-r.sc.total).toFixed(1); txt+=` <strong>${r.p.model}</strong> trails by <em>${gap} pts</em>.`; }
-    wb.innerHTML=`<div class="why-bar">📡 ${txt}</div>`;
-  } else wb.innerHTML='';
-
-  // Excl note
-  const en=document.getElementById('excl-note');
-  en.innerHTML=ex.length?`<div class="excl-note"><b>${ex.length} excluded</b> · deal-breakers: ${ex.map(r=>r.p.model.split(' ')[0]).join(', ')}</div>`:'';
-
-  // Cards
-  const cw=document.getElementById('cards-wrap');
-  cw.innerHTML='';
-
-  const rankCls = i => i===1?'r-gold':i===2?'r-silver':i===3?'r-bronze':'r-n';
-
-  q.forEach(({ p, sc }, i) => {
-    const rank=i+1;
-    const pct=Math.round((sc.total/top)*100);
-    const maxW=Math.max(...Object.values(sc.w));
-    const bkd=Object.entries(sc.w).map(([k,v])=>`<span class="bd${v>=maxW*.8?' hi':''}"><b>${v.toFixed(1)}</b> ${CLABEL[k]}</span>`).join('');
-    const chipHot = k => sc.w[k] >= maxW*.7;
-
-    const card=document.createElement('div');
-    card.className='rcard'+(rank===1?' top':'');
-    card.innerHTML=`
-      <div class="rc-top">
-        <span class="rc-rank ${rankCls(rank)}">#${rank}</span>
-        <div class="rc-info">
-          <div class="rc-model">${p.model}</div>
-          <div class="rc-chips">
-            <span class="chip ${p.os==='global'?'c-global':'c-china'}">${p.os==='global'?'Global ROM':'China ROM'}</span>
-            <span class="chip ${chipHot('chg')?'c-hot':'c-spec'}">⚡ ${p.chg}W</span>
-            <span class="chip ${chipHot('bat')?'c-hot':'c-spec'}">🔋 ${(p.bat/1000).toFixed(1)}k</span>
-            <span class="chip c-spec">$${p.price}</span>
-            <span class="chip ${chipHot('cam')?'c-hot':'c-spec'}">📷 NR${p.cam}</span>
-            <span class="chip c-spec">${p.stor}GB</span>
-          </div>
+      <div class="eq-rig">
+        <div class="eq-rig-top">
+          <span class="eq-rig-label">Live weight allocation</span>
+          <span class="eq-rig-live" id="liveTag">● recalculating</span>
         </div>
-        <div class="rc-score">
-          <div class="sc-num">${sc.total.toFixed(1)}</div>
-          <div class="sc-pct">${pct}%</div>
+        <div class="eq-bands" id="eqBands"></div>
+        <div class="eq-result">
+          <div>
+            <div class="eq-result-name" id="eqWinner">—</div>
+            <div class="eq-result-sub" id="eqWinnerSub">drag a band, change the winner</div>
+          </div>
+          <div class="eq-result-score" id="eqScore">—</div>
         </div>
       </div>
-      <div class="bar-t"><div class="bar-f ${rank===1?'bar-gold':'bar-g'}" style="width:${pct}%"></div></div>
-      <div class="rc-bkd">${bkd}</div>`;
+    </div>
 
-    // Hover popup
-    card.addEventListener('mouseenter', () => {
-      const rect = card.getBoundingClientRect();
-      showPopup(p, sc, rank, rect);
-    });
-    card.addEventListener('mouseleave', hidePopup);
-    cw.appendChild(card);
-  });
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 480 600" xmlns="http://www.w3.org/2000/svg">
+        <!-- dot grid -->
+        <g class="sig-dot" opacity="0.5">
+          <circle cx="20" cy="20" r="1.4"></circle><circle cx="60" cy="20" r="1.4"></circle><circle cx="100" cy="20" r="1.4"></circle>
+          <circle cx="20" cy="60" r="1.4"></circle><circle cx="460" cy="20" r="1.4"></circle><circle cx="420" cy="20" r="1.4"></circle>
+          <circle cx="20" cy="580" r="1.4"></circle><circle cx="60" cy="580" r="1.4"></circle><circle cx="460" cy="580" r="1.4"></circle>
+          <circle cx="420" cy="580" r="1.4"></circle><circle cx="20" cy="540" r="1.4"></circle><circle cx="460" cy="540" r="1.4"></circle>
+        </g>
 
-  ex.forEach(({ p, e }) => {
-    const card=document.createElement('div');
-    card.className='rcard excl';
-    card.innerHTML=`
-      <div class="rc-top">
-        <span class="rc-rank r-n">—</span>
-        <div class="rc-info">
-          <div class="rc-model">${p.model}</div>
-          <div class="excl-r">${e.join(' · ')}</div>
-        </div>
-      </div>`;
-    cw.appendChild(card);
+        <!-- signal rings emanating from top of phone -->
+        <g>
+          <circle class="sig-ring" cx="240" cy="120" r="40"></circle>
+          <circle class="sig-ring" cx="240" cy="120" r="72"></circle>
+          <circle class="sig-ring2" cx="240" cy="120" r="104"></circle>
+        </g>
+
+        <!-- faint axis lines -->
+        <line class="sig-line" x1="0" y1="300" x2="480" y2="300"></line>
+        <line class="sig-line" x1="240" y1="0" x2="240" y2="600"></line>
+
+        <!-- EQ bars rising into the phone silhouette -->
+        <g id="sigBars">
+          <!-- left-side raw spec bars, short -> tall, dim -> green -->
+          <rect class="sig-bar sig-dim"   x="48"  y="430" width="16" height="90"  rx="3"></rect>
+          <rect class="sig-bar sig-dim"   x="74"  y="390" width="16" height="130" rx="3"></rect>
+          <rect class="sig-bar sig-green" x="100" y="350" width="16" height="170" rx="3"></rect>
+          <rect class="sig-bar sig-dim"   x="126" y="410" width="16" height="110" rx="3"></rect>
+          <rect class="sig-bar sig-green" x="152" y="320" width="16" height="200" rx="3"></rect>
+          <rect class="sig-bar sig-gold sig-glow" x="178" y="270" width="16" height="250" rx="3"></rect>
+          <rect class="sig-bar sig-green" x="204" y="330" width="16" height="190" rx="3"></rect>
+
+          <!-- right-side mirrored bars, tall -> short, fading into silver/phone tone -->
+          <rect class="sig-bar sig-green" x="260" y="330" width="16" height="190" rx="3"></rect>
+          <rect class="sig-bar sig-gold sig-glow" x="286" y="270" width="16" height="250" rx="3"></rect>
+          <rect class="sig-bar sig-green" x="312" y="320" width="16" height="200" rx="3"></rect>
+          <rect class="sig-bar sig-dim"   x="338" y="410" width="16" height="110" rx="3"></rect>
+          <rect class="sig-bar sig-green" x="364" y="350" width="16" height="170" rx="3"></rect>
+          <rect class="sig-bar sig-dim"   x="390" y="390" width="16" height="130" rx="3"></rect>
+          <rect class="sig-bar sig-dim"   x="416" y="430" width="16" height="90"  rx="3"></rect>
+        </g>
+
+        <!-- phone silhouette outline, sitting on top of the bars like a held instrument -->
+        <rect class="sig-phone" x="186" y="150" width="108" height="220" rx="20"></rect>
+        <line class="sig-phone" x1="218" y1="170" x2="262" y2="170"></line>
+        <circle class="sig-phone" cx="240" cy="350" r="6"></circle>
+
+        <!-- baseline -->
+        <line class="sig-line" x1="20" y1="520" x2="460" y2="520" stroke-width="1.5" opacity="0.6"></line>
+      </svg>
+    </div>
+  </section>
+
+  <div class="tape">
+    <div class="tape-inner">
+      <span><b>OnePlus 15</b> leads on Charging and Display.</span>
+      <span><b>Xiaomi 17 Ultra</b> trails by 3.2 pts.</span>
+      <span><b>Vivo X300 Pro</b> tops Camera at NR:97.</span>
+      <span><b>Honor WIN</b> runs a class-leading 10,000mAh cell.</span>
+      <span><b>OnePlus 15</b> leads on Charging and Display.</span>
+      <span><b>Xiaomi 17 Ultra</b> trails by 3.2 pts.</span>
+      <span><b>Vivo X300 Pro</b> tops Camera at NR:97.</span>
+      <span><b>Honor WIN</b> runs a class-leading 10,000mAh cell.</span>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="slabel">How the rig works</div>
+    <h2 class="sec-title">Three moves, one ranking that's actually yours.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-mark">DRAG</div>
+        <h3>Set your weights</h3>
+        <p>Seven sliders — ROM, battery, price, storage, charging, display, camera. Push what you care about up, pull the rest down. The math updates as you move.</p>
+      </div>
+      <div class="step">
+        <div class="step-mark">CUT</div>
+        <h3>Set deal-breakers</h3>
+        <p>Some specs aren't a preference, they're a wall. Flip a toggle to hard-exclude any phone under your battery, charging, or display floor — no amount of weighting saves it.</p>
+      </div>
+      <div class="step">
+        <div class="step-mark">READ</div>
+        <h3>See why, not just who</h3>
+        <p>Every rank card breaks down its score by category, and hovering shows the plain-language reason a phone landed where it did. No black box.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">Presets, if you'd rather not drag</div>
+    <h2 class="sec-title">Five starting points, tuned per tier.</h2>
+    <div class="pgrid">
+      <div class="pcard"><div class="pn">Balanced</div><div class="pd">The default mix. No category dominates.</div></div>
+      <div class="pcard"><div class="pn">Value</div><div class="pd">Price carries the most weight in the model.</div></div>
+      <div class="pcard"><div class="pn">Camera</div><div class="pd">Nanoreview camera score weighted highest.</div></div>
+      <div class="pcard"><div class="pn">Speed</div><div class="pd">Charging wattage (and perf, on Budget) leads.</div></div>
+      <div class="pcard"><div class="pn">Battery</div><div class="pd">mAh capacity overrides everything else.</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="slabel">Pick your tier</div>
+    <h2 class="sec-title">Same engine, two different price brackets.</h2>
+    <div class="tools">
+      <a href="flagships.html" class="tcard flag">
+        <span class="ttag">$450 – $1,600</span>
+        <h3>Flagships</h3>
+        <p>22 current-gen flagships, weighted toward global ROM access, top-tier camera scores, and 100W+ charging. For people who want the best spec on the shelf.</p>
+        <span class="tgo">Open the flagship rig →</span>
+      </a>
+      <a href="index_budget_phones.html" class="tcard bud">
+        <span class="ttag">$199 – $629</span>
+        <h3>Budget</h3>
+        <p>20 budget and mid-range phones with a sharper price curve and a judgment-based performance tier — built for a bracket where every dollar shows up on the scoreboard.</p>
+        <span class="tgo">Open the budget rig →</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="ftr">
+    Signal EQ — a phone preference equalizer. Specs sourced from public listings; weighting is yours. <b>Not a buying recommendation, a thinking tool.</b>
+  </footer>
+</main>
+
+<script>
+// Mini live equalizer demo — purely illustrative, cycles through example weightings
+const BANDS = [
+  { tag:'ROM',  base:60 },
+  { tag:'BAT',  base:75 },
+  { tag:'PRICE',base:35 },
+  { tag:'STOR', base:55 },
+  { tag:'CHG',  base:80 },
+  { tag:'DISP', base:40 },
+  { tag:'CAM',  base:50 },
+];
+const WINNERS = [
+  { name:'OnePlus 15', sub:'Charging + Display lead', score:'34.2' },
+  { name:'Xiaomi 17 Ultra', sub:'Camera + Storage lead', score:'31.8' },
+  { name:'Vivo X300 Pro', sub:'Camera dominant, NR:97', score:'29.6' },
+  { name:'Honor WIN', sub:'Battery far ahead, 10k mAh', score:'33.1' },
+  { name:'Iqoo 15 Ultra', sub:'Storage + Charging lead', score:'30.4' },
+];
+
+const wrap = document.getElementById('eqBands');
+const fills = [];
+BANDS.forEach((b) => {
+  const band = document.createElement('div');
+  band.className = 'eq-band';
+  band.innerHTML = `
+    <span class="eq-num" data-num>${b.base}</span>
+    <div class="eq-track"><div class="eq-fill" style="height:${b.base}%"></div></div>
+    <span class="eq-tag">${b.tag}</span>`;
+  wrap.appendChild(band);
+  fills.push(band.querySelector('.eq-fill'));
+});
+
+let i = 0;
+function cycle() {
+  BANDS.forEach((b, idx) => {
+    const jitter = Math.round((Math.random()*50)-25);
+    const val = Math.max(8, Math.min(95, b.base + jitter));
+    fills[idx].style.height = val + '%';
+    fills[idx].parentElement.parentElement.querySelector('[data-num]').textContent = val;
   });
+  const w = WINNERS[i % WINNERS.length];
+  document.getElementById('eqWinner').textContent = w.name;
+  document.getElementById('eqWinnerSub').textContent = w.sub;
+  document.getElementById('eqScore').textContent = w.score;
+  i++;
 }
+cycle();
+setInterval(cycle, 2600);
 
-// ── Init ──────────────────────────────────────────────────────
-CATS.forEach(c => syncLbl(c.key));
-render();
+// click a track to nudge it manually (just visual delight, not wired to real scoring)
+document.querySelectorAll('.eq-track').forEach(track => {
+  track.addEventListener('click', (e) => {
+    const rect = track.getBoundingClientRect();
+    const pct = Math.round(100 - ((e.clientY - rect.top) / rect.height) * 100);
+    const v = Math.max(5, Math.min(98, pct));
+    track.querySelector('.eq-fill').style.height = v + '%';
+    track.parentElement.querySelector('[data-num]').textContent = v;
+    document.getElementById('liveTag').textContent = '● updated';
+    setTimeout(()=>document.getElementById('liveTag').textContent='● recalculating', 800);
+  });
+});
 </script>
 </body>
 </html>
