@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Signal EQ — Stop reading spec sheets. Start dialing them in.</title>
+
+<!-- Social preview — update og:url and og:image once deployed -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Signal EQ — Stop reading spec sheets. Start dialing them in.">
+<meta property="og:description" content="Drag what matters to you, mute the rest, and watch 20+ Android phones re-sort in real time. No more 40-tab spec comparisons.">
+<meta property="og:url" content="https://dbest180.github.io/phone-picker/">
+<meta property="og:image" content="https://dbest180.github.io/phone-picker/og-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Signal EQ — Stop reading spec sheets. Start dialing them in.">
+<meta name="twitter:description" content="Drag what matters to you, mute the rest, and watch 20+ Android phones re-sort in real time.">
+<meta name="twitter:image" content="https://dbest180.github.io/phone-picker/og-preview.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -58,13 +72,8 @@ body{font-family:var(--sans);background:var(--void);color:var(--text);overflow-x
   font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.03em;
   padding:8px 16px;border-radius:20px;border:1px solid var(--green);color:var(--green);
   text-decoration:none;transition:all .15s;
-  animation: ctaPulse 2.6s ease-in-out infinite;
 }
-.hdr-cta:hover{background:var(--gd);box-shadow:0 0 14px rgba(0,255,65,.2);animation-play-state:paused;}
-@keyframes ctaPulse{
-  0%,100%{ box-shadow:0 0 0 0 rgba(0,255,65,.35); }
-  50%{ box-shadow:0 0 14px 2px rgba(0,255,65,.45); }
-}
+.hdr-cta:hover{background:var(--gd);box-shadow:0 0 14px rgba(0,255,65,.2);}
 
 main{position:relative;z-index:1;}
 
@@ -142,7 +151,12 @@ h1 .strike::after{content:'';position:absolute;left:-2%;right:-2%;top:50%;height
   padding:14px 26px; border-radius:10px; text-decoration:none; display:inline-flex; align-items:center; gap:9px;
   transition: transform .15s, box-shadow .15s;
 }
-.btn-primary{background:var(--green); color:#001a06; box-shadow:0 0 0 1px rgba(0,255,65,.4), 0 8px 30px rgba(0,255,65,.15);}
+.btn-primary{background:var(--green); color:#001a06; box-shadow:0 0 0 1px rgba(0,255,65,.4), 0 8px 30px rgba(0,255,65,.15); animation: ctaPulse 2.6s ease-in-out infinite;}
+.btn-primary:hover{ animation-play-state: paused; }
+@keyframes ctaPulse{
+  0%,100%{ box-shadow:0 0 0 1px rgba(0,255,65,.4), 0 8px 30px rgba(0,255,65,.15); }
+  50%{ box-shadow:0 0 0 1px rgba(0,255,65,.6), 0 8px 40px rgba(0,255,65,.35); }
+}
 .btn-primary:hover{transform:translateY(-2px); box-shadow:0 0 0 1px var(--green), 0 12px 36px rgba(0,255,65,.3);}
 .btn-ghost{background:transparent;border:1px solid var(--edge); color:var(--text);}
 .btn-ghost:hover{border-color:var(--silver); transform:translateY(-2px);}
